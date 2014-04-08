@@ -1,8 +1,6 @@
 /* RVM specific types */
 
-typedef struct rvm_struct
-{
-
-} rvm_t;
+// rvm_t stores the entry point for the directory structure, i.e. dir_id.
+typedef int rvm_t;
 
 typedef int trans_t;
