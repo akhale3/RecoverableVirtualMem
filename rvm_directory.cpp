@@ -2,14 +2,14 @@
  * rvm_directory.cpp
  *
  *  Created on: Apr 7, 2014
- *      Author: Anish K. and Nikita G.
+ *      Authors: Anish K. and Nikita G.
  */
 
 #include "rvm_directory.h"
 
 /*
  * TODO:
- * 1. Define all signatures.
+ * 1. Complete all interface definitions.
  */
 
 /*
