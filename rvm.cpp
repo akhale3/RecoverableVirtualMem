@@ -1,7 +1,28 @@
 #include "rvm.h"
+#include<iostream>
+#include<stdlib.h>
 
+using namespace std;
 rvm_t rvm_init(const char *directory)
 {
+	char* dir= directory;
+	int dir_status= rvm_dir_check_exists(dir);
+	// dir status can have three values
+	// if doesnot exist in file then return 0
+	// if exists but not in the directory structure return 1;
+	// if exists in directory structure then returns 2
+	if(dir_status!=0)
+	{
+		if(dir_status==2) exit(0);
+		if(dir_status==1)
+		return rvm_dir_create(dir);
+	}
+	else
+	{
+		int ret = rvm_dir_mkdir(dir);
+		return rvm_dir_create(dir);
+	}
+
 
 }
 

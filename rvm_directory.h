@@ -22,6 +22,7 @@ typedef struct rvm_dir {
 //	rvm_seg_t * seg_head;
 	rvm_dir_t * dir_next;
 } rvm_dir_t;
+rvm_dir_t *dir_head;
 
 int rvm_dir_check_exists(char * dir_name); // Checks if directory exists.
 int rvm_dir_mkdir(char * dir_name); // Makes a directory at current location.
