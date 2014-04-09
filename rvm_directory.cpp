@@ -2,7 +2,7 @@
  * rvm_directory.cpp
  *
  *  Created on: Apr 7, 2014
- *      Author: Anish K. and Nikita G.
+ *      Authors: Anish K. and Nikita G.
  */
 
 #include "rvm_directory.h"
@@ -12,7 +12,7 @@ using namespace std;
 
 /*
  * TODO:
- * 1. Define all signatures.
+ * 1. Complete all interface definitions.
  */
 
 /*
@@ -26,7 +26,7 @@ int rvm_dir_check_exists(char * dir_name)
 	DIR *directory=opendir(dir_name);
 		  if(directory != NULL)
 		  {
-			rvm_dir_t *temp;
+			rvm_dir_t *temp, *dir_head;
 			temp= dir_head;
 
 
