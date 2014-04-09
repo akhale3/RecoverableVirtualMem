@@ -6,6 +6,9 @@
  */
 
 #include "rvm_directory.h"
+#include<dirent.h>
+#include<string.h>
+using namespace std;
 
 /*
  * TODO:
@@ -20,7 +23,29 @@
  */
 int rvm_dir_check_exists(char * dir_name)
 {
+	DIR *directory=opendir(dir_name);
+		  if(directory != NULL)
+		  {
+			rvm_dir_t *temp, *dir_head;
+			temp= dir_head;
 
+
+			  //You have to make sure that global_directory points to the head of the list
+			  while(temp != NULL)
+			  {
+			    if(strcmp(dir_name, temp->dir_name) == 0)
+			    {
+			    	cout<<"File present in directory list";
+
+			    }
+			    temp = temp->dir_next;
+			    return 2;
+			  }
+			  if(strcmp(dir_name,temp->dir_name)!=0)
+			  return 1;
+			}
+
+		  else return 0;
 }
 
 /*
