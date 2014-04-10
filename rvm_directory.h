@@ -12,6 +12,7 @@
 
 #include "rvm_internal.h"
 #include "rvm_segment.h"
+#include<string>
 
 #ifndef RVM_DIRECTORY_H_
 #define RVM_DIRECTORY_H_
@@ -23,6 +24,8 @@ typedef struct rvm_dir
 	rvm_seg_t *	seg_head;
 	rvm_dir_t *	dir_next;
 }	rvm_dir_t;
+rvm_dir_t *dir_head= NULL;
+rvm_t dir_id =0;
 
 int rvm_dir_check_exists(char * dir_name);	// Checks if directory exists.
 int rvm_dir_mkdir(char * dir_name);			// Makes a directory at current location.
