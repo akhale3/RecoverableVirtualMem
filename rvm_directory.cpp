@@ -8,6 +8,7 @@
 #include "rvm_directory.h"
 #include<dirent.h>
 #include<string.h>
+#include<iostream>
 using namespace std;
 
 /*
@@ -26,7 +27,7 @@ int rvm_dir_check_exists(char * dir_name)
 	DIR *directory=opendir(dir_name);
 		  if(directory != NULL)
 		  {
-			rvm_dir_t *temp, *dir_head;
+			rvm_dir_t *temp;
 			temp= dir_head;
 
 
@@ -35,7 +36,7 @@ int rvm_dir_check_exists(char * dir_name)
 			  {
 			    if(strcmp(dir_name, temp->dir_name) == 0)
 			    {
-			    	cout<<"File present in directory list";
+			    	cout << "File present in directory list";
 
 			    }
 			    temp = temp->dir_next;
@@ -56,6 +57,13 @@ int rvm_dir_check_exists(char * dir_name)
  */
 int rvm_dir_mkdir(char * dir_name)
 {
+	char *mkdir= "mkdir -p";
+	char *directory= dir_name;
+	strcat(mkdir,directory);
+	if(system(mkdir))
+		return 1;
+	else return 0;
+
 
 }
 
@@ -67,7 +75,29 @@ int rvm_dir_mkdir(char * dir_name)
  */
 rvm_t rvm_dir_create(char * dir_name)
 {
+	  dir_id++;
+	  char *temp = malloc(strlen(dir_name));
+	  temp = dir_name;
 
+	  //Initialize the directory structure
+	  rvm_dir_t *dir_node;
+	  dir_node = malloc(sizeof(struct rvm_dir_t));
+	  dir_node->dir_name = temp;
+	  dir_node->dir_next = NULL;
+	  dir_node->dir_id = dir_id;
+	  dir_node->seg_head = NULL;
+
+	  if(dir_head == NULL)
+	    {
+		  dir_head = dir_node;
+	    }
+	  else
+	  {
+	    dir_node->dir_next = dir_head;
+	    dir_head = dir_node;
+	  }
+
+	  return dir_node->dir_id;
 }
 
 /*
@@ -78,5 +108,21 @@ rvm_t rvm_dir_create(char * dir_name)
  */
 rvm_dir_t rvm_dir_get(rvm_t dir_id)
 {
+	rvm_dir_t *temp;
+	temp = dir_head;
 
+	if(temp == NULL)
+	{
+		return NULL;
+	}
+
+	while(temp != NULL)
+	  {
+	    	if(dir_id == temp->dir_id)
+	    	{
+	    		return temp;
+	    	}
+	    	temp = temp->dir_next;
+	  }
+	 return NULL;
 }
