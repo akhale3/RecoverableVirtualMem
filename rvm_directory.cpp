@@ -77,28 +77,28 @@ int rvm_dir_mkdir(char * dir_name)
  */
 rvm_t rvm_dir_create(char * dir_name)
 {
-	  dir_id++;
-	  char *temp = strdup(dir_name);
+	dir_id++;
+	char *temp = strdup(dir_name);
 
-	  //Initialize the directory structure
-	  rvm_dir_t *dir_node;
-	  dir_node = (rvm_dir_t *) malloc(sizeof(rvm_dir_t));
-	  dir_node->dir_name = temp;
-	  dir_node->dir_next = NULL;
-	  dir_node->dir_id = dir_id;
-	  dir_node->seg_head = NULL;
+	//Initialize the directory structure
+	rvm_dir_t *dir_node;
+	dir_node = (rvm_dir_t *) malloc(sizeof(rvm_dir_t));
+	dir_node->dir_name = temp;
+	dir_node->dir_next = NULL;
+	dir_node->dir_id = dir_id;
+	dir_node->seg_head = NULL;
 
-	  if(dir_head == NULL)
-	    {
-		  dir_head = dir_node;
-	    }
-	  else
-	  {
-	    dir_node->dir_next = dir_head;
-	    dir_head = dir_node;
-	  }
+	if(dir_head == NULL)
+	{
+		dir_head = dir_node;
+	}
+	else
+	{
+		dir_node->dir_next = dir_head;
+		dir_head = dir_node;
+	}
 
-	  return dir_node->dir_id;
+	return dir_node->dir_id;
 }
 
 /*

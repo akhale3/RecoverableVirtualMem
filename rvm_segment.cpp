@@ -24,18 +24,6 @@
  */
 int rvm_seg_mapped(char * seg_name, rvm_t dir_id)
 {
-
-}
-
-/*
- * @function		rvm_seg_exists
- * @brief			Checks whether a segment already exists on disk
- * @param[seg_name]	Name of segment
- * @param[dir_id]	Directory ID containing seg_name
- * @return			1 if it exists, 0 if it doesn't
- */
-int rvm_seg_exists(char * seg_name, rvm_t dir_id)
-{
 	rvm_dir_t * rvm_dir;
 	rvm_dir = rvm_dir_get(dir_id);
 
@@ -74,6 +62,31 @@ int rvm_seg_exists(char * seg_name, rvm_t dir_id)
 	}
 
 	return 0;
+}
+
+/*
+ * @function		rvm_seg_exists
+ * @brief			Checks whether a segment already exists on disk
+ * @param[seg_name]	Name of segment
+ * @param[dir_id]	Directory ID containing seg_name
+ * @return			1 if it exists, 0 if it doesn't
+ */
+int rvm_seg_exists(char * seg_name, rvm_t dir_id)
+{
+	rvm_dir_t * rvm_dir;
+	rvm_dir = rvm_dir_get(dir_id);
+
+	char * dir_name;
+	dir_name = rvm_dir->dir_name;
+
+	/* Switch to directory that is expected to host the concerned segment */
+	chdir(dir_name);
+	struct stat * buff;
+	int status = -1;
+
+	status = stat(seg_name, buff);
+
+	return (status + 1);
 }
 
 /*
