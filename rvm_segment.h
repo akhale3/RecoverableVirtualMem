@@ -14,6 +14,9 @@
 #define RVM_SEGMENT_H_
 
 #include "rvm_directory.h"
+#include<iostream>
+
+using namespace std;
 
 typedef struct rvm_seg
 {

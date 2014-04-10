@@ -8,7 +8,12 @@
 /*
  * TODO:
  * 1. Complete interface definitions.
+ * 2. Create rvm_exit(string perror) containing perror and exit(0).
  */
+
+#include "rvm_segment.h"
+
+#define DEBUG 1
 
 /*
  * @function		rvm_seg_mapped
@@ -31,7 +36,44 @@ int rvm_seg_mapped(char * seg_name, rvm_t dir_id)
  */
 int rvm_seg_exists(char * seg_name, rvm_t dir_id)
 {
+	rvm_dir_t * rvm_dir;
+	rvm_dir = rvm_dir_get(dir_id);
 
+	if(rvm_dir == NULL)
+	{
+//		rvm_exit("Unknown directory");
+	}
+
+	rvm_seg_t * rvm_seg;
+	rvm_seg = rvm_dir->seg_head;
+
+	if(rvm_seg == NULL)
+	{
+		if(DEBUG)
+		{
+			cout << "Segment not found";
+		}
+		return 0;
+	}
+
+	while(rvm_seg != NULL)
+	{
+		if(rvm_seg->seg_name == seg_name)
+		{
+			return 1;
+		}
+		else
+		{
+			rvm_seg = rvm_seg->seg_next;
+		}
+	}
+
+	if(DEBUG)
+	{
+		cout << "Segment not found";
+	}
+
+	return 0;
 }
 
 /*
@@ -41,7 +83,53 @@ int rvm_seg_exists(char * seg_name, rvm_t dir_id)
  * @param[dir_id]	Directory ID containing seg_base
  * @return			None
  */
-void rvm_seg_delete(void * seg_base, rvm_t dir_id)
+void rvm_seg_delete(void * seg_base_addr, rvm_t dir_id)
 {
+	rvm_dir_t * rvm_dir;
+	rvm_dir = rvm_dir_get(dir_id);
 
+	if(rvm_dir == NULL)
+	{
+//		rvm_exit("Unknown directory");
+	}
+
+	rvm_seg_t * rvm_seg_curr;
+	rvm_seg_curr = rvm_dir->seg_head;
+
+	if(rvm_seg_curr == NULL)
+	{
+		if(DEBUG)
+		{
+			cout << "Segment not found";
+		}
+		return;
+	}
+
+	rvm_seg_t * rvm_seg_prev;
+	rvm_seg_prev = rvm_seg_curr;
+
+	while(rvm_seg_curr != NULL)
+	{
+		if(rvm_seg_curr->seg_base_addr == seg_base_addr)
+		{
+			rvm_seg_prev->seg_next = rvm_seg_curr->seg_next;
+			if(rvm_seg_prev == rvm_seg_curr)	// Segment head. Set seg_head to NULL.
+			{
+				rvm_dir->seg_head = NULL;
+			}
+			return;
+		}
+		else
+		{
+			rvm_seg_prev = rvm_seg_curr;
+			rvm_seg_curr = rvm_seg_curr->seg_next;
+		}
+	}
+
+	if(DEBUG)
+	{
+		cout << "Segment not found";
+	}
+
+	return;
 }
