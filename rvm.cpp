@@ -1,14 +1,10 @@
 #include "rvm.h"
-#include<iostream>
-#include<stdlib.h>
-#include<unistd.h>
 
-using namespace std;
 rvm_t rvm_init(const char *directory)
 {
-	char * dir = directory;
+	char * dir = strdup(directory);
 	int dir_status= rvm_dir_check_exists(dir);
-	rvm_t ret;
+	rvm_t ret = 0;
 	int mkdir_status;
 	// dir status can have three values
 	// if does not exist in file then return 0

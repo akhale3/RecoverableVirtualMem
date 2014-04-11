@@ -6,12 +6,6 @@
  */
 
 #include "rvm_directory.h"
-#include<dirent.h>
-#include<string>
-#include<iostream>
-#include<stdlib.h>
-
-using namespace std;
 
 /*
  * TODO:

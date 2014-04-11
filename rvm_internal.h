@@ -1,11 +1,11 @@
-/* RVM specific types */
+/* RVM required header files */
 
 /*
  * TODO:
  * 1. Include all required header files.
  */
 
-// rvm_t stores the entry point for the directory structure, i.e. dir_id
-typedef int rvm_t;
-
-typedef int trans_t;
+#include "rvm_types.h"
+#include "rvm_file.h"
+#include "rvm_segment.h"
+#include "rvm_directory.h"
