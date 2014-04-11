@@ -1,29 +1,45 @@
 #include "rvm.h"
 #include<iostream>
 #include<stdlib.h>
+#include<unistd.h>
 
 using namespace std;
 rvm_t rvm_init(const char *directory)
 {
-	char* dir= directory;
+	char * dir = directory;
 	int dir_status= rvm_dir_check_exists(dir);
+	rvm_t ret;
+	int mkdir_status;
 	// dir status can have three values
-	// if doesnot exist in file then return 0
+	// if does not exist in file then return 0
 	// if exists but not in the directory structure return 1;
 	// if exists in directory structure then returns 2
-	if(dir_status!=0)
+	if(dir_status != 0)
 	{
-		if(dir_status==2) exit(0);
-		if(dir_status==1)
-		return rvm_dir_create(dir);
+		if(dir_status == 2)
+		{
+//			rvm_exit("Directory exists");
+		}
+		if(dir_status == 1)
+		ret = rvm_dir_create(dir);
 	}
 	else
 	{
-		int ret = rvm_dir_mkdir(dir);
-		return rvm_dir_create(dir);
+		mkdir_status = rvm_dir_mkdir(dir);
+		if(mkdir_status == 1)
+		{
+			ret = rvm_dir_create(dir);
+			chdir(dir);
+			system("touch rvm.log");
+			chdir("..");
+		}
+		else
+		{
+//			rvm_exit("Directory creation error");
+		}
 	}
 
-
+	return ret;
 }
 
 void *rvm_map(rvm_t rvm, const char *segname, int size_to_create)
