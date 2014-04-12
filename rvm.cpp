@@ -3,7 +3,7 @@
 rvm_t rvm_init(const char *directory)
 {
 	char * dir = strdup(directory);
-	int dir_status= rvm_dir_check_exists(dir);
+	int dir_status = rvm_dir_check_exists(dir);
 	rvm_t ret = 0;
 	int mkdir_status;
 	// dir status can have three values
@@ -14,7 +14,7 @@ rvm_t rvm_init(const char *directory)
 	{
 		if(dir_status == 2)
 		{
-//			rvm_exit("Directory exists");
+			rvm_exit("Directory already exists");
 		}
 		if(dir_status == 1)
 		ret = rvm_dir_create(dir);
@@ -31,7 +31,7 @@ rvm_t rvm_init(const char *directory)
 		}
 		else
 		{
-//			rvm_exit("Directory creation error");
+			rvm_exit("Directory creation error");
 		}
 	}
 
