@@ -6,6 +6,7 @@
  */
 
 #include "rvm_directory.h"
+#include "rvm_global.h"
 
 /*
  * TODO:
@@ -16,15 +17,19 @@
  * @function		rvm_dir_check_exists
  * @brief			Checks if directory exists
  * @param[dir_name]	Name of directory
- * @return			1 if exists, 0 if it doesn't
+ * @return			2 if exists, 1 if it doesn't, 0 if erroneous
  */
 int rvm_dir_check_exists(char * dir_name)
 {
-	DIR *directory = opendir(dir_name);
+	DIR * directory = opendir(dir_name);
+	int ret = 0;
+
 	if(directory != NULL)
 	{
-		rvm_dir_t *temp, *dir_head;
-		temp = dir_head;
+		rvm_dir_t * temp;
+		temp = rvm_global_dir_head;
+
+		ret = 1;
 
 		while(temp != NULL)
 		{
@@ -33,16 +38,11 @@ int rvm_dir_check_exists(char * dir_name)
 				cout << "File present in directory list";
 			}
 			temp = temp->dir_next;
-			return 2;
-		}
-
-		if(strcmp(dir_name,temp->dir_name) != 0)
-		{
-			return 1;
+			ret = 2;
 		}
 	}
 
-	return 0;
+	return ret;
 }
 
 /*
@@ -53,14 +53,21 @@ int rvm_dir_check_exists(char * dir_name)
  */
 int rvm_dir_mkdir(char * dir_name)
 {
-	char *mkdir= "mkdir -p";
-	char *directory= dir_name;
+	char * mkdir = "mkdir -p";
+	char * directory = dir_name;
 	strcat(mkdir,directory);
+	int ret = 0;
+
 	if(system(mkdir))
-		return 1;
-	else return 0;
+	{
+		ret = 1;
+	}
+	else
+	{
+		ret = 0;
+	}
 
-
+	return ret;
 }
 
 /*
@@ -71,25 +78,25 @@ int rvm_dir_mkdir(char * dir_name)
  */
 rvm_t rvm_dir_create(char * dir_name)
 {
-	dir_id++;
 	char *temp = strdup(dir_name);
 
-	//Initialize the directory structure
-	rvm_dir_t *dir_node;
+	// Initialize the directory structure
+	rvm_dir_t * dir_node;
 	dir_node = (rvm_dir_t *) malloc(sizeof(rvm_dir_t));
 	dir_node->dir_name = temp;
 	dir_node->dir_next = NULL;
-	dir_node->dir_id = dir_id;
+	dir_node->dir_id = ++rvm_global_dir_id;
 	dir_node->seg_head = NULL;
 
-	if(dir_head == NULL)
+	if(rvm_global_dir_head == NULL)
 	{
-		dir_head = dir_node;
+		rvm_global_dir_head = dir_node;
 	}
 	else
 	{
-		dir_node->dir_next = dir_head;
-		dir_head = dir_node;
+		// Add the newly created directory node to the head of the directory list
+		dir_node->dir_next = rvm_global_dir_head;
+		rvm_global_dir_head = dir_node;
 	}
 
 	return dir_node->dir_id;
@@ -103,21 +110,21 @@ rvm_t rvm_dir_create(char * dir_name)
  */
 rvm_dir_t rvm_dir_get(rvm_t dir_id)
 {
-	rvm_dir_t *temp;
-	temp = dir_head;
+	rvm_dir_t * temp;
+	temp = rvm_global_dir_head;
 
 	if(temp == NULL)
 	{
-		return NULL;
+		return 0;
 	}
 
 	while(temp != NULL)
-	  {
-	    	if(dir_id == temp->dir_id)
-	    	{
-	    		return temp;
-	    	}
-	    	temp = temp->dir_next;
-	  }
-	 return NULL;
+	{
+		if(dir_id == temp->dir_id)
+		{
+			return temp;
+		}
+		temp = temp->dir_next;
+	}
+	return 0;
 }

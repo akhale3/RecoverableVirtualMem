@@ -15,6 +15,7 @@
 
 #include "rvm_types.h"
 #include "rvm_directory.h"
+#include "rvm_global.h"
 
 typedef struct rvm_seg
 {

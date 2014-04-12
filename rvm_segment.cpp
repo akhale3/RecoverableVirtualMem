@@ -29,7 +29,7 @@ int rvm_seg_mapped(char * seg_name, rvm_t dir_id)
 
 	if(rvm_dir == NULL)
 	{
-//		rvm_exit("Unknown directory");
+		rvm_exit("Unknown directory");
 	}
 
 	rvm_seg_t * rvm_seg;
@@ -104,7 +104,7 @@ void rvm_seg_delete(void * seg_base_addr, rvm_t dir_id)
 
 	if(rvm_dir == NULL)
 	{
-//		rvm_exit("Unknown directory");
+		rvm_exit("Unknown directory");
 	}
 
 	rvm_seg_t * rvm_seg_curr;
