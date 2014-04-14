@@ -83,7 +83,7 @@ int rvm_seg_exists(char * seg_name, rvm_t dir_id)
 	chdir(dir_name);
 	struct stat * buff;
 	int status = -1;
-	status = stat(seg_name, buff);
+	status = stat((const char *)seg_name, buff);
 	/* Switch back to root directory */
 	chdir("..");
 

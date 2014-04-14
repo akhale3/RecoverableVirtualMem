@@ -14,6 +14,7 @@
 #include<dirent.h>
 #include<stdlib.h>
 #include<stdio.h>
+#include<sys/stat.h>
 
 using namespace std;
 
