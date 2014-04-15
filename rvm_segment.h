@@ -26,8 +26,11 @@ typedef struct rvm_seg
 	struct rvm_seg *	seg_next;
 }	rvm_seg_t;
 
-int rvm_seg_mapped(char * seg_name, rvm_t dir_id);	// Checks whether a segment has already been mapped.
-int rvm_seg_exists(char * seg_name, rvm_t dir_id);	// Checks whether a segment already exists on disk.
-void rvm_seg_delete(void * seg_base, rvm_t dir_id);	// Deletes a segment.
+int rvm_seg_mapped(char * seg_name, rvm_t dir_id);				// Checks whether a segment has already been mapped.
+int rvm_seg_exists(char * seg_name, rvm_t dir_id);				// Checks whether a segment already exists on disk.
+void rvm_seg_delete(void * seg_base, rvm_t dir_id);				// Deletes a segment.
+int rvm_seg_size(char * seg_name, char * dir_name);				// Returns file size in bytes of seg_name for comparison with size_to_create.
+int rvm_seg_write(char * seg_name, int seg_size, char * mode);	// Writes a segment file for mode 'w+' and appends for mode 'a' with NULL characters.
+
 
 #endif /* RVM_SEGMENT_H_ */

@@ -73,17 +73,17 @@ void *rvm_map(rvm_t rvm, const char *segname, int size_to_create)
 
 		if(chdir(curr_dir)==-1) exit(0);
 
-		int size = rvm_file_size(seg, curr_dir);
+		int size = rvm_seg_size(seg, curr_dir);
 		if(size == 0)
 		{
-			if(!(rvm_file_write(seg,size_to_create, "w+")))
+			if(!(rvm_seg_write(seg,size_to_create, "w+")))
 			{
 				cout<<"segment failed to write";
 			}
 		}
 		if(size < size_to_create)
 		{
-			if(!(rvm_file_write(seg, size_to_create, "a")))
+			if(!(rvm_seg_write(seg, size_to_create, "a")))
 			{
 				cout<<"segment failed to append size";
 			}
@@ -136,7 +136,7 @@ void *rvm_map(rvm_t rvm, const char *segname, int size_to_create)
 		//Go into this directory now.
 		if(chdir(temp->dir_name)==-1) printf("ERROR!");
 
-		temp_ret = rvm_file_write(segname, size_to_create, "w");
+		temp_ret = rvm_seg_write(segname, size_to_create, "w+");
 		if(temp_ret == 0)
 			cout<<"segment file could not be updated \n";
 

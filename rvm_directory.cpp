@@ -83,16 +83,13 @@ rvm_t rvm_dir_create(char * dir_name)
 	dir_node->dir_id = ++rvm_global_dir_id;
 	dir_node->seg_head = NULL;
 
-	if(rvm_global_dir_head == NULL)
-	{
-		rvm_global_dir_head = dir_node;
-	}
-	else
+	if(rvm_global_dir_head != NULL)
 	{
 		// Add the newly created directory node to the head of the directory list
 		dir_node->dir_next = rvm_global_dir_head;
-		rvm_global_dir_head = dir_node;
 	}
+
+	rvm_global_dir_head = dir_node;
 
 	return dir_node->dir_id;
 }
@@ -108,14 +105,21 @@ rvm_dir_t * rvm_dir_get(rvm_t dir_id)
 	rvm_dir_t * temp;
 	temp = rvm_global_dir_head;
 
+	rvm_dir_t * ret = NULL;
+
+	if(temp == NULL)
+	{
+		rvm_exit("Directory list empty");
+	}
+
 	while(temp != NULL)
 	{
 		if(dir_id == temp->dir_id)
 		{
-			return temp;
+			ret = temp;
 		}
 		temp = temp->dir_next;
 	}
 
-	return temp;
+	return ret;
 }
