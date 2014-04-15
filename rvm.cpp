@@ -17,7 +17,7 @@ rvm_t rvm_init(const char *directory)
 			rvm_exit("Directory already exists");
 		}
 		if(dir_status == 1)
-		ret = rvm_dir_create(dir);
+			ret = rvm_dir_create(dir);
 	}
 	else
 	{
@@ -54,97 +54,97 @@ void *rvm_map(rvm_t rvm, const char *segname, int size_to_create)
 
 
 	if(rvm_seg_mapped(seg, rvm))
-	  {
-	    cout<<"segment mapped already, can not map again";
-	  }
-    if(rvm_seg_exists(seg, rvm))
-	  {
-	    temp = rvm_dir_get(rvm);
-
-	    if (temp == NULL)
-	      cout<<"directory not found";
-	    else
-	    {
-
-	      curr_dir = temp->dir_name;
-	      if(curr_dir==NULL)
-	        cout<<"NULL DIRECTORY";
-	    }
-
-	    if(chdir(curr_dir)==-1) exit(0);
-
-	    int size = rvm_file_size(seg, curr_dir);
-	    if(size == 0)
-	    {
-	    	if(!(rvm_file_write(seg,size_to_create, "w+")))
-	    	{
-	    		cout<<"segment failed to write";
-	    	}
-	    }
-	    if(size < size_to_create)
-	      {
-	    	if(!(rvm_file_write(seg, size_to_create, "a")))
-	        {
-	    		cout<<"segment failed to append size";
-	        }
-	      }
-	    //This function updates the segment file and the log file both
-//	    gt_fileLookupLog("LogFile", segname,curr_dir);
-
-	    rvm_dir_t *temp = rvm_dir_get(rvm);
-	    //Check if rvm directory exists
-
-	    void *buf = (void *) malloc((size_t)size);
-	    chdir(curr_dir);
-	    FILE *f = fopen( seg, "r" );
-	    fread(buf, 1 ,(size_t) size, f);
-	    fclose(f);
-
-	    //Does this even work?
-	    seg_node->seg_base_addr = buf;
-
-	    if(temp->seg_head == NULL)
-	      temp->seg_head = seg_node;
-	    else
-	    {
-	      seg_node->seg_next = temp->seg_head;
-	      temp->seg_head = seg_node;
-	    }
-
-	    chdir("..");
-	    ret_pointer = seg_node->seg_base_addr;
-	    return ret_pointer;
-	  }
-	  else
-	  {
-	    int temp_ret;
-
-
-	    rvm_dir_t *temp = rvm_dir_get(rvm);
-	    if(temp==NULL)
-	      cout<<"Segment not initialized\n";
-
-	    //Insert this segment into the directory's segment list here
-	    if(temp->seg_head == NULL)
-	      temp->seg_head = seg_node;
-	    else
-	    {
-	      seg_node->seg_next = temp->seg_head;
-	      temp->seg_head = seg_node;
-	    }
-
-	    //Go into this directory now.
-	    if(chdir(temp->dir_name)==-1) printf("ERROR!");
-
-	    //temp_ret = gt_fileWriteSeg(segname, size_to_create);
-	    if(temp_ret == 0)
-	      cout<<"segment file could not be updated \n";
-
-	    chdir("..");
-	    ret_pointer = seg_node->seg_base_addr;
-	    return seg_node->seg_base_addr;
-	  }
+	{
+		cout<<"segment mapped already, can not map again";
 	}
+	if(rvm_seg_exists(seg, rvm))
+	{
+		temp = rvm_dir_get(rvm);
+
+		if (temp == NULL)
+			cout<<"directory not found";
+		else
+		{
+
+			curr_dir = temp->dir_name;
+			if(curr_dir==NULL)
+				cout<<"NULL DIRECTORY";
+		}
+
+		if(chdir(curr_dir)==-1) exit(0);
+
+		int size = rvm_file_size(seg, curr_dir);
+		if(size == 0)
+		{
+			if(!(rvm_file_write(seg,size_to_create, "w+")))
+			{
+				cout<<"segment failed to write";
+			}
+		}
+		if(size < size_to_create)
+		{
+			if(!(rvm_file_write(seg, size_to_create, "a")))
+			{
+				cout<<"segment failed to append size";
+			}
+		}
+		//This function updates the segment file and the log file both
+		//	    gt_fileLookupLog("LogFile", segname,curr_dir);
+
+		rvm_dir_t *temp = rvm_dir_get(rvm);
+		//Check if rvm directory exists
+
+		void *buf = (void *) malloc((size_t)size);
+		chdir(curr_dir);
+		FILE *f = fopen( seg, "r" );
+		fread(buf, 1 ,(size_t) size, f);
+		fclose(f);
+
+		//Does this even work?
+		seg_node->seg_base_addr = buf;
+
+		if(temp->seg_head == NULL)
+			temp->seg_head = seg_node;
+		else
+		{
+			seg_node->seg_next = temp->seg_head;
+			temp->seg_head = seg_node;
+		}
+
+		chdir("..");
+		ret_pointer = seg_node->seg_base_addr;
+		return ret_pointer;
+	}
+	else
+	{
+		int temp_ret;
+
+
+		rvm_dir_t *temp = rvm_dir_get(rvm);
+		if(temp==NULL)
+			cout<<"Segment not initialized\n";
+
+		//Insert this segment into the directory's segment list here
+		if(temp->seg_head == NULL)
+			temp->seg_head = seg_node;
+		else
+		{
+			seg_node->seg_next = temp->seg_head;
+			temp->seg_head = seg_node;
+		}
+
+		//Go into this directory now.
+		if(chdir(temp->dir_name)==-1) printf("ERROR!");
+
+		temp_ret = rvm_file_write(segname, size_to_create, "w");
+		if(temp_ret == 0)
+			cout<<"segment file could not be updated \n";
+
+		chdir("..");
+		ret_pointer = seg_node->seg_base_addr;
+		return seg_node->seg_base_addr;
+	}
+}
 
 
 
@@ -183,5 +183,5 @@ void rvm_abort_trans(trans_t tid)
 
 void rvm_truncate_log(rvm_t rvm)
 {
-	
+
 }
