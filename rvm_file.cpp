@@ -62,7 +62,7 @@ int rvm_file_write(char * seg_name, int seg_size, char * mode)
 	int ret = 0;
 
 	char buff[1];
-	buff[0] = NULL;
+	buff[0] = '\0';
 
 	if(DEBUG)
 	{

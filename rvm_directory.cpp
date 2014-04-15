@@ -6,8 +6,6 @@
  */
 
 #include "rvm_directory.h"
-#include "rvm_global.h"
-
 /*
  * TODO:
  * 1. Complete all interface definitions.
@@ -53,18 +51,15 @@ int rvm_dir_check_exists(char * dir_name)
  */
 int rvm_dir_mkdir(char * dir_name)
 {
-	char * mkdir = "mkdir -p";
-	char * directory = dir_name;
-	strcat(mkdir,directory);
+	char * mkdir = (char *) malloc(512);
+	strcpy(mkdir, "mkdir -p ");
+	strcat(mkdir,dir_name);
 	int ret = 0;
+	int status = system(mkdir);
 
-	if(system(mkdir))
+	if(status != -1)
 	{
 		ret = 1;
-	}
-	else
-	{
-		ret = 0;
 	}
 
 	return ret;
@@ -106,17 +101,12 @@ rvm_t rvm_dir_create(char * dir_name)
  * @function		rvm_dir_get
  * @brief			Returns the directory structure by looking up with dir_id
  * @param[dir_id]	Directory ID
- * @return			rvm_t dir_id
+ * @return			Directory structure
  */
-rvm_dir_t rvm_dir_get(rvm_t dir_id)
+rvm_dir_t * rvm_dir_get(rvm_t dir_id)
 {
 	rvm_dir_t * temp;
 	temp = rvm_global_dir_head;
-
-	if(temp == NULL)
-	{
-		return 0;
-	}
 
 	while(temp != NULL)
 	{
@@ -126,5 +116,6 @@ rvm_dir_t rvm_dir_get(rvm_t dir_id)
 		}
 		temp = temp->dir_next;
 	}
-	return 0;
+
+	return temp;
 }
