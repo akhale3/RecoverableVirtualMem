@@ -14,8 +14,6 @@
 
 #include "rvm_segment.h"
 
-#define DEBUG 1
-
 /*
  * @function		rvm_seg_mapped
  * @brief			Checks whether a segment has already been mapped
@@ -38,10 +36,6 @@ int rvm_seg_mapped(char * seg_name, rvm_t dir_id)
 
 	if(rvm_seg == NULL)
 	{
-		if(DEBUG)
-		{
-			cout << "Segment not found";
-		}
 		return 0;
 	}
 
@@ -55,11 +49,6 @@ int rvm_seg_mapped(char * seg_name, rvm_t dir_id)
 		{
 			rvm_seg = rvm_seg->seg_next;
 		}
-	}
-
-	if(DEBUG)
-	{
-		cout << "Segment not found";
 	}
 
 	return 0;
@@ -113,10 +102,6 @@ void rvm_seg_delete(void * seg_base_addr, rvm_t dir_id)
 
 	if(rvm_seg_curr == NULL)
 	{
-		if(DEBUG)
-		{
-			cout << "Segment not found";
-		}
 		return;
 	}
 
@@ -139,11 +124,6 @@ void rvm_seg_delete(void * seg_base_addr, rvm_t dir_id)
 			rvm_seg_prev = rvm_seg_curr;
 			rvm_seg_curr = rvm_seg_curr->seg_next;
 		}
-	}
-
-	if(DEBUG)
-	{
-		cout << "Segment not found";
 	}
 
 	return;
@@ -205,11 +185,6 @@ int rvm_seg_write(char * seg_name, int seg_size, char * mode)
 
 	char buff[1];
 	buff[0] = '\0';
-
-	if(DEBUG)
-	{
-		cout << "curr_seg_size = " << curr_seg_size << "\n";
-	}
 
 	if(seg_size > curr_seg_size)
 	{

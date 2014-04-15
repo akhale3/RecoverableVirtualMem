@@ -6,10 +6,10 @@ rvm_t rvm_init(const char *directory)
 	int dir_status = rvm_dir_check_exists(dir);
 	rvm_t ret = 0;
 	int mkdir_status;
-	// dir status can have three values
-	// if does not exist in file then return 0
-	// if exists but not in the directory structure return 1;
-	// if exists in directory structure then returns 2
+	// dir_status can have three values
+	// if directory does not exist then return 0
+	// if directory exists but not in the directory structure return 1;
+	// if directory exists in directory structure then returns 2
 	if(dir_status != 0)
 	{
 		if(dir_status == 2)
@@ -55,7 +55,7 @@ void *rvm_map(rvm_t rvm, const char *segname, int size_to_create)
 
 	if(rvm_seg_mapped(seg, rvm))
 	{
-		cout<<"segment mapped already, can not map again";
+		rvm_exit("segment mapped already, can not map again");
 	}
 	if(rvm_seg_exists(seg, rvm))
 	{
@@ -102,7 +102,7 @@ void *rvm_map(rvm_t rvm, const char *segname, int size_to_create)
 		fread(buf, 1 ,(size_t) size, f);
 		fclose(f);
 
-
+		//This is where it maps
 		seg_node->seg_base_addr = buf;
 
 		if(temp1->seg_head == NULL)
@@ -136,7 +136,7 @@ void *rvm_map(rvm_t rvm, const char *segname, int size_to_create)
 		}
 
 		//Go into this directory now.
-		if(chdir(temp->dir_name)==-1) printf("ERROR!");
+		if(chdir(temp->dir_name)==-1) exit(0);
 
 		temp_ret = rvm_seg_write(seg, size_to_create, "w+");
 		if(temp_ret == 0)
@@ -165,8 +165,7 @@ void rvm_destroy(rvm_t rvm, const char *segname)
 	  char * seg = strdup(segname);
 	  if(rvm_seg_mapped(seg, rvm))
 	  {
-	    printf("\nSegment already mapped. Cannot be destroyed");
-	    exit(0);
+	    rvm_exit("Segment already mapped. Cannot be destroyed");
 	  }
 
 	  rvm_dir_t *dir;
@@ -180,7 +179,7 @@ void rvm_destroy(rvm_t rvm, const char *segname)
 	      {
 	    	if(rvm_seg_delete(seg, rvm)!=0)
 	      	    {
-	    			cout<<"Segment not destroyed\n";
+	    			rvm_exit("Segment not destroyed");
 	      	    }
 	    	else
 	    		{
