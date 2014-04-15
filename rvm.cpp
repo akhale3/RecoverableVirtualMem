@@ -46,7 +46,7 @@ void *rvm_map(rvm_t rvm, const char *segname, int size_to_create)
 	char *seg = strdup(segname);
 	rvm_seg_t *seg_node = (rvm_seg_t *) malloc(sizeof(rvm_seg_t));
 
-	seg_node->seg_name = segname;
+	seg_node->seg_name = seg;
 	seg_node->seg_size = size_to_create;
 	seg_node->seg_base_addr =  malloc(size_to_create);
 	seg_node->seg_trans_id = 0;
@@ -91,7 +91,9 @@ void *rvm_map(rvm_t rvm, const char *segname, int size_to_create)
 		//This function updates the segment file and the log file both
 		//	    gt_fileLookupLog("LogFile", segname,curr_dir);
 
-		rvm_dir_t *temp = rvm_dir_get(rvm);
+
+		rvm_dir_t *temp1 = rvm_dir_get(rvm);
+
 		//Check if rvm directory exists
 
 		void *buf = (void *) malloc((size_t)size);
@@ -100,15 +102,15 @@ void *rvm_map(rvm_t rvm, const char *segname, int size_to_create)
 		fread(buf, 1 ,(size_t) size, f);
 		fclose(f);
 
-		//Does this even work?
+
 		seg_node->seg_base_addr = buf;
 
-		if(temp->seg_head == NULL)
-			temp->seg_head = seg_node;
+		if(temp1->seg_head == NULL)
+			temp1->seg_head = seg_node;
 		else
 		{
-			seg_node->seg_next = temp->seg_head;
-			temp->seg_head = seg_node;
+			seg_node->seg_next = temp1->seg_head;
+			temp1->seg_head = seg_node;
 		}
 
 		chdir("..");
@@ -136,30 +138,60 @@ void *rvm_map(rvm_t rvm, const char *segname, int size_to_create)
 		//Go into this directory now.
 		if(chdir(temp->dir_name)==-1) printf("ERROR!");
 
-		temp_ret = rvm_seg_write(segname, size_to_create, "w+");
+		temp_ret = rvm_seg_write(seg, size_to_create, "w+");
 		if(temp_ret == 0)
 			cout<<"segment file could not be updated \n";
 
 		chdir("..");
 		ret_pointer = seg_node->seg_base_addr;
-		return seg_node->seg_base_addr;
+		return ret_pointer;
 	}
 }
 
 
 
 
-}
+
 
 void rvm_unmap(rvm_t rvm, void *segbase)
 {
+	//before deleting segment make sure all logs and transactions are deleted from that seg
+	rvm_seg_delete(segbase, rvm);
 
 }
 
 void rvm_destroy(rvm_t rvm, const char *segname)
 {
+	  char * seg = strdup(segname);
+	  if(rvm_seg_mapped(seg, rvm))
+	  {
+	    printf("\nSegment already mapped. Cannot be destroyed");
+	    exit(0);
+	  }
 
+	  rvm_dir_t *dir;
+	  dir= rvm_dir_get(rvm);
+
+	  if(dir)
+	  {
+
+	    chdir(dir->dir_name);
+	    if(rvm_seg_exists(seg,rvm))
+	      {
+	    	if(rvm_seg_delete(seg, rvm)!=0)
+	      	    {
+	    			cout<<"Segment not destroyed\n";
+	      	    }
+	    	else
+	    		{
+	    			cout<<"Segment Destroyed successfully";
+	    		}
+	      }
+	    chdir("..");
+	  }
 }
+
+
 
 trans_t rvm_begin_trans(rvm_t rvm, int numsegs, void **segbases)
 {

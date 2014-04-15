@@ -162,11 +162,13 @@ int rvm_seg_size(char * seg_name, char * dir_name)
 
 	if(dir_name != NULL)
 	{
+
+		/*Ask anish why he did this. It is not required*/
 		if(strcmp(dir_name, ".") > 0)
 		{
 			chdir(dir_name);
 		}
-
+		/**/
 		FILE * rvm_file_ptr = fopen(seg_name, "r");
 		if(rvm_file_ptr != NULL)
 		{
