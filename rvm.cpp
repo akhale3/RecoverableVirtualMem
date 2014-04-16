@@ -194,6 +194,27 @@ void rvm_destroy(rvm_t rvm, const char *segname)
 
 trans_t rvm_begin_trans(rvm_t rvm, int numsegs, void **segbases)
 {
+	  int i = 0,j = 0;
+	  rvm_trans_t *temp;
+	  if(temp != NULL)
+	    for(i = 0; i < numsegs; i++)
+	    {
+	      while(temp != NULL)
+	      {
+	        for(j = 0; j < temp->trans_seg_count; j++)
+	          {
+	        	if(segbases[i] == temp->trans_seg_bases[j])
+	        	{
+	        		cout<<"segment is modified by other transaction\n";
+	        		return (trans_t)-1;
+	        	}
+	          }
+	        temp = temp->trans_next;
+	      }
+	      temp = rvm_global_trans_head;
+	    }
+
+	//  return rvm_trans_create(insert_trans);
 
 }
 
