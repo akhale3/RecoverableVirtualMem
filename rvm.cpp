@@ -147,14 +147,12 @@ void rvm_destroy(rvm_t rvm, const char *segname)
 			}
 			else
 			{
-				cout<<"Segment Destroyed successfully";
+				cout << "Segment Destroyed successfully" << "\n";
 			}
 		}
 		chdir("..");
 	}
 }
-
-
 
 trans_t rvm_begin_trans(rvm_t rvm, int numsegs, void **segbases)
 {
