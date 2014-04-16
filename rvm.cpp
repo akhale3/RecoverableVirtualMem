@@ -46,7 +46,8 @@ void *rvm_map(rvm_t rvm, const char *segname, int size_to_create)
 	char * rvm_seg = strdup(segname);
 	rvm_seg_t * seg_node = (rvm_seg_t *) malloc(sizeof(rvm_seg_t));
 	char * mode = "w+";
-	int size = size_to_create;
+	size_t size = size_to_create;
+	off_t offset = 0;
 	FILE * rvm_seg_file;
 
 	if(rvm_seg_mapped(rvm_seg, rvm))
@@ -90,8 +91,8 @@ void *rvm_map(rvm_t rvm, const char *segname, int size_to_create)
 
 	/* Segment Mapping */
 	rvm_seg_file = open(rvm_seg, O_RDONLY, 0);
-	ret_pointer = mmap(NULL, size, PROT_READ, MAP_PRIVATE, rvm_seg_file, 0);
-	if(ret_pointer == NULL)
+	ret_pointer = mmap(NULL, size, PROT_READ, MAP_PRIVATE, rvm_seg_file, offset);
+	if(ret_pointer == MAP_FAILED)
 	{
 		rvm_exit("Mapping unsuccessful");
 	}
@@ -156,25 +157,25 @@ void rvm_destroy(rvm_t rvm, const char *segname)
 
 trans_t rvm_begin_trans(rvm_t rvm, int numsegs, void **segbases)
 {
-	  int i = 0,j = 0;
-	  rvm_trans_t *temp;
-	  if(temp != NULL)
-	    for(i = 0; i < numsegs; i++)
-	    {
-	      while(temp != NULL)
-	      {
-	        for(j = 0; j < temp->trans_seg_count; j++)
-	          {
-	        	if(segbases[i] == temp->trans_seg_bases[j])
-	        	{
-	        		cout<<"segment is modified by other transaction\n";
-	        		return (trans_t)-1;
-	        	}
-	          }
-	        temp = temp->trans_next;
-	      }
-	      temp = rvm_global_trans_head;
-	    }
+	int i = 0,j = 0;
+	rvm_trans_t *temp;
+	if(temp != NULL)
+		for(i = 0; i < numsegs; i++)
+		{
+			while(temp != NULL)
+			{
+				for(j = 0; j < temp->trans_seg_count; j++)
+				{
+					if(segbases[i] == temp->trans_seg_bases[j])
+					{
+						cout<<"segment is modified by other transaction\n";
+						return (trans_t)-1;
+					}
+				}
+				temp = temp->trans_next;
+			}
+			temp = rvm_global_trans_head;
+		}
 
 	return rvm_trans_create(rvm, numsegs, segbases);
 

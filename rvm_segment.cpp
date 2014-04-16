@@ -102,7 +102,7 @@ void rvm_seg_delete(void * seg_base_addr, rvm_t dir_id)
 
 	if(rvm_seg_curr == NULL)
 	{
-		return;
+		rvm_exit("Segment does not exist");
 	}
 
 	rvm_seg_t * rvm_seg_prev;
@@ -117,6 +117,13 @@ void rvm_seg_delete(void * seg_base_addr, rvm_t dir_id)
 			{
 				rvm_dir->seg_head = NULL;
 			}
+
+			/* Unmap segment from virtual memory */
+			if(munmap(rvm_seg_curr->seg_base_addr, rvm_seg_curr->seg_size) != 0)
+			{
+				rvm_exit("Segment unmapping error");
+			}
+
 			return;
 		}
 		else
