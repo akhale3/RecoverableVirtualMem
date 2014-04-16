@@ -226,10 +226,25 @@ void rvm_commit_trans(trans_t tid)
 
 void rvm_abort_trans(trans_t tid)
 {
+	rvm_trans_t *temp;
+	temp= rvm_trans_get(tid);
+	if(temp==NULL)
+	{
+		rvm_exit("transaction for this transaction id not found");
+	}
+	rvm_redo_t *redo_rec = temp->rvm_redo_head;
+	if(redo_rec!=NULL)
+	{
+		temp->rvm_redo_head= NULL;
+		rvm_trans_delete(tid);
+
+	}
+
 
 }
 
 void rvm_truncate_log(rvm_t rvm)
 {
+
 
 }
