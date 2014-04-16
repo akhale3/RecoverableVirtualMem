@@ -15,6 +15,8 @@
 #include<stdlib.h>
 #include<stdio.h>
 #include<sys/stat.h>
+#include<sys/mman.h>
+#include<fcntl.h>
 
 using namespace std;
 
