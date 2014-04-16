@@ -188,40 +188,65 @@ void rvm_about_to_modify(trans_t tid, void *segbase, int offset, int size)
 	int i = 0, flag = 0;
 	rvm_trans_t *temp;
 	temp = rvm_trans_get(tid);
-    if(temp == NULL)
-    {
-    	rvm_exit("transaction not found");
-    }
+	if(temp == NULL)
+	{
+		rvm_exit("Transaction not found");
+	}
 
+	for(i = 0; i < temp->trans_seg_count; i++)
+	{
+		if(temp->trans_seg_bases[i] == segbase)
+		{
+			flag = 1;
+			break;
+		}
+	}
 
-	  for(i = 0; i < temp->trans_seg_count; i++)
-	  {
-	    if(temp->trans_seg_bases[i] == segbase)
-	    {
-	      flag = 1;
-	      break;
-	    }
-	  }
+	if(flag == 0)
+	{
+		rvm_exit("Segment is not present in this transaction");
+	}
 
-	  if(flag == 0)
-	  {
-		  rvm_exit("segment doesnot present in this transaction");
-	  }
-
-	  rvm_seg_t * temp_seg = gt_transaction_searchDIR(temp->trans_rvm, segbase);
-	  char *seg_name = temp_seg->seg_name;
-
-
-
-	  }
-
-
-
+	rvm_seg_t * temp_seg = rvm_seg_get(segbase, temp->trans_dir_id);
+	char *seg_name = temp_seg->seg_name;
 }
 
 void rvm_commit_trans(trans_t tid)
 {
+	rvm_trans_t * rvm_trans_temp = rvm_trans_get(tid);
 
+	if(rvm_trans_temp == NULL)
+	{
+		rvm_exit("Transaction not found");
+	}
+
+	rvm_dir_t * rvm_dir_temp = rvm_dir_get(rvm_trans_temp->trans_dir_id);
+
+	if(rvm_dir_temp == NULL)
+	{
+		rvm_exit("Directory does not exist");
+	}
+
+	rvm_redo_t * rvm_redo_temp = rvm_trans_temp->rvm_redo_head;
+	char * data = (char *) malloc(rvm_redo_temp->size);
+
+	if(data == NULL)
+	{
+		rvm_exit("Insufficient memory");
+	}
+
+	chdir(rvm_dir_temp->dir_name);
+
+	while(rvm_redo_temp != NULL)
+	{
+		memcpy(data, rvm_redo_temp->seg_base_addr + rvm_redo_temp->offset, rvm_redo_temp->size);
+		rvm_log_write(rvm_redo_temp->seg_name, rvm_redo_temp->offset, rvm_redo_temp->size, data);
+		rvm_redo_temp = rvm_redo_temp->rvm_redo_next;
+	}
+
+	rvm_trans_delete(tid);
+
+	chdir("..");
 }
 
 void rvm_abort_trans(trans_t tid)

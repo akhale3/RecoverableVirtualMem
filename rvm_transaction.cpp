@@ -37,7 +37,7 @@ trans_t rvm_trans_create(rvm_t rvm, int numsegs, void **segbases)
 		i--;
 	}
 	rvm_trans_temp->trans_seg_count = numsegs;
-	rvm_trans_temp->trans_rvm = rvm;
+	rvm_trans_temp->trans_dir_id = rvm;
 	rvm_trans_temp->rvm_redo_head = NULL;
 	rvm_trans_temp->trans_next = NULL;
 

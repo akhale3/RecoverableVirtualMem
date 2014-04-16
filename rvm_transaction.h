@@ -19,7 +19,7 @@ typedef struct rvm_trans
 	trans_t				trans_id;
 	void **				trans_seg_bases;
 	int 				trans_seg_count;
-	rvm_t				trans_rvm;
+	rvm_t				trans_dir_id;
 	rvm_redo_t *		rvm_redo_head;
 	struct rvm_trans *	trans_next;
 } rvm_trans_t;

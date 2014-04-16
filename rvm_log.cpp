@@ -54,3 +54,4 @@ int rvm_log_delete(char * seg_name)
 {
 
 }
+
