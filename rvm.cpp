@@ -209,6 +209,28 @@ void rvm_about_to_modify(trans_t tid, void *segbase, int offset, int size)
 
 	rvm_seg_t * temp_seg = rvm_seg_get(segbase, temp->trans_dir_id);
 	char *seg_name = temp_seg->seg_name;
+	rvm_redo_t *redo_log = (rvm_redo_t *) malloc(sizeof(rvm_redo_t));
+	redo_log->offset = offset;
+	redo_log->size = size;
+	redo_log->rvm_redo_next = NULL;
+	redo_log->seg_name = strdup(seg_name);
+	redo_log->seg_base_addr = segbase;
+	//redo_log->uncommitted_seg_backup = malloc(size);
+	//memcpy(uncommitted_insertable->uncommitted_seg_backup, segbase+offset, size);
+
+	if(temp->rvm_redo_head == NULL)
+	  {
+		temp->rvm_redo_head = redo_log;
+	  }
+	else
+	  {
+	    rvm_redo_t *redo = temp->rvm_redo_head;
+	    while(redo->rvm_redo_next != NULL)
+	      {
+	    	redo = redo->rvm_redo_next;
+	      }
+	    redo->rvm_redo_next = redo_log;
+	  }
 }
 
 void rvm_commit_trans(trans_t tid)
