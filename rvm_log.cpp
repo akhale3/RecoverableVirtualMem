@@ -18,12 +18,12 @@
  * @function		rvm_log_write
  * @brief			Appends to a log file for a particular backing store
  * @param[seg_name]	Name of segment file
- * @param[log_size]	Size of the data to be written in the log file
+ * @param[size]		Size of the segment data to be written in the log file
  * @param[offset]	Can be used to calculate the beginning of the next log segment
  * @param[data]		Data to be written to the log file
  * @return			1 if successful, 0 if erroneous
  */
-int rvm_log_write(char * seg_name, int log_size, int offset, char * data)
+int rvm_log_write(char * seg_name, int size, int offset, char * data)
 {
 	FILE * rvm_file_ptr;
 	int ret = 1;
@@ -35,9 +35,9 @@ int rvm_log_write(char * seg_name, int log_size, int offset, char * data)
 	}
 
 	fprintf(rvm_file_ptr, "%s\n", seg_name);
-	fprintf(rvm_file_ptr, "%d\n", log_size);
+	fprintf(rvm_file_ptr, "%d\n", size);
 	fprintf(rvm_file_ptr, "%d\n", offset);
-	fwrite(data, log_size, 1, rvm_file_ptr);
+	fwrite(data, size, 1, rvm_file_ptr);
 
 	fclose(rvm_file_ptr);
 

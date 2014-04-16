@@ -11,7 +11,17 @@
 #include "rvm_types.h"
 #include "rvm_global.h"
 
-int rvm_log_write(char * seg_name, int log_size, int offset, char * data);	// Appends to a log file for a particular backing store
-int rvm_log_delete(char * seg_name);										// Delete the log file from the backing store associated with a particular segment
+/* Redo record in memory */
+typedef struct rvm_redo
+{
+	char * 				seg_name;
+	int 				size;
+	int 				offset;
+	void * 				seg_base_addr;
+	struct rvm_redo *	rvm_redo_next;
+} rvm_redo_t;
+
+int rvm_log_write(char * seg_name, int size, int offset, char * data);	// Appends to a log file for a particular backing store
+int rvm_log_delete(char * seg_name);									// Delete the log file from the backing store associated with a particular segment
 
 #endif /* RVM_LOG_H_ */

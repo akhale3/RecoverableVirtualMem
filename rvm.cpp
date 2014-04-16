@@ -121,6 +121,7 @@ void *rvm_map(rvm_t rvm, const char *segname, int size_to_create)
 void rvm_unmap(rvm_t rvm, void *segbase)
 {
 	//before deleting segment make sure all logs and transactions are deleted from that seg
+	//consider closing file pointer: rvm_seg_file
 	rvm_seg_delete(segbase, rvm);
 
 }
@@ -133,8 +134,8 @@ void rvm_destroy(rvm_t rvm, const char *segname)
 		rvm_exit("Segment already mapped. Cannot be destroyed");
 	}
 
-	rvm_dir_t *dir;
-	dir= rvm_dir_get(rvm);
+	rvm_dir_t * dir;
+	dir = rvm_dir_get(rvm);
 
 	if(dir)
 	{
@@ -142,7 +143,7 @@ void rvm_destroy(rvm_t rvm, const char *segname)
 		chdir(dir->dir_name);
 		if(rvm_seg_exists(seg,rvm))
 		{
-			if(rvm_seg_delete(seg, rvm)!=0)
+			if(rvm_seg_delete(seg, rvm) != 0)
 			{
 				rvm_exit("Segment not destroyed");
 			}

@@ -12,6 +12,7 @@
 #include "rvm_global.h"
 #include "rvm_segment.h"
 #include "rvm_directory.h"
+#include "rvm_log.h"
 
 typedef struct rvm_trans
 {
@@ -19,6 +20,7 @@ typedef struct rvm_trans
 	void **				trans_seg_bases;
 	int 				trans_seg_count;
 	rvm_t				trans_rvm;
+	rvm_redo_t *		rvm_redo_head;
 	struct rvm_trans *	trans_next;
 } rvm_trans_t;
 

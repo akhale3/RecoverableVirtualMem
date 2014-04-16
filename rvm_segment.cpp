@@ -81,11 +81,11 @@ int rvm_seg_exists(char * seg_name, rvm_t dir_id)
 }
 
 /*
- * @function		rvm_seg_delete
- * @brief			Deletes a segment
- * @param[seg_base]	Base address of the segment as passed in rvm_unmap()
- * @param[dir_id]	Directory ID containing seg_base
- * @return			None
+ * @function				rvm_seg_delete
+ * @brief					Deletes a segment
+ * @param[seg_base_addr]	Base address of the segment as passed in rvm_unmap()
+ * @param[dir_id]			Directory ID containing seg_base
+ * @return					None
  */
 void rvm_seg_delete(void * seg_base_addr, rvm_t dir_id)
 {
@@ -204,6 +204,47 @@ int rvm_seg_write(char * seg_name, int seg_size, char * mode)
 		}
 		fclose(rvm_file_ptr);
 		ret = 1;
+	}
+
+	return ret;
+}
+
+/*
+ * @function				rvm_seg_get
+ * @brief					Returns a segment structure pointer for a particular seg_base
+ * @param[seg_base_addr]	Base address pointer of a segment
+ * @param[dir_id]			Directory ID
+ * @return					(rvm_seg_t *) if successful, NULL if erroneous
+ */
+rvm_seg_t * rvm_seg_get(void * seg_base_addr, rvm_t dir_id)
+{
+	rvm_dir_t * rvm_dir;
+	rvm_dir = rvm_dir_get(dir_id);
+	rvm_seg_t * ret = NULL;
+
+	if(rvm_dir == NULL)
+	{
+		rvm_exit("Unknown directory");
+	}
+
+	rvm_seg_t * rvm_seg_curr;
+	rvm_seg_curr = rvm_dir->seg_head;
+
+	if(rvm_seg_curr == NULL)
+	{
+		rvm_exit("Segment does not exist");
+	}
+
+	while(rvm_seg_curr != NULL)
+	{
+		if(rvm_seg_curr->seg_base_addr == seg_base_addr)
+		{
+			ret = rvm_seg_curr;
+		}
+		else
+		{
+			rvm_seg_curr = rvm_seg_curr->seg_next;
+		}
 	}
 
 	return ret;
