@@ -14,10 +14,10 @@
 /* Redo record in memory */
 typedef struct rvm_redo
 {
-	char * 				seg_name;
+	char *				seg_name;
 	int 				size;
 	int 				offset;
-	void * 				seg_base_addr;
+	void *				seg_base_addr;
 	struct rvm_redo *	rvm_redo_next;
 } rvm_redo_t;
 
