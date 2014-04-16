@@ -270,6 +270,18 @@ void rvm_abort_trans(trans_t tid)
 
 void rvm_truncate_log(rvm_t rvm)
 {
-
-
+	rvm_dir_t *temp = rvm_dir_get(rvm);
+	if(temp==NULL)
+	{
+		rvm_exit("Can not truncate, directory does not exists");
+	}
+	chdir(temp->dir_name);
+    rvm_seg_t * temp_seg;
+	temp_seg = temp->seg_head;
+	while(temp_seg!=NULL)
+	  {
+	    //gt_fileLookupLog("LogFile", temp_seg->seg_name,temp);
+	    temp_seg = temp_seg->seg_next;
+	  }
+	  chdir("..");
 }
