@@ -22,8 +22,8 @@ typedef struct rvm_trans
 	struct rvm_trans *	trans_next;
 } rvm_trans_t;
 
-void rvm_trans_create(rvm_trans_t * rvm_trans_temp);	// Inserts a transaction structure to the head of the transaction linked list.
-void rvm_trans_delete(trans_t trans_id);				// Deletes a particular transaction from the transaction linked list.
-rvm_trans_t * rvm_trans_get(trans_t trans_id);			// Returns a transaction structure pointer for a particular transaction.
+trans_t rvm_trans_create(rvm_t rvm, int numsegs, void **segbases);	// Inserts a transaction structure to the head of the transaction linked list.
+void rvm_trans_delete(trans_t trans_id);							// Deletes a particular transaction from the transaction linked list.
+rvm_trans_t * rvm_trans_get(trans_t trans_id);						// Returns a transaction structure pointer for a particular transaction.
 
 #endif /* RVM_TRANSACTION_H_ */

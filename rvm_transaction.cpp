@@ -13,9 +13,9 @@
  * @param[rvm]			Directory ID
  * @param[numsegs]		Number of segments
  * @param[**segbases]	Pointer to pointers of segment base addresses
- * @return				None
+ * @return				Transaction ID
  */
-void rvm_trans_create(rvm_t rvm, int numsegs, void **segbases)
+trans_t rvm_trans_create(rvm_t rvm, int numsegs, void **segbases)
 {
 	int i = numsegs;
 	rvm_trans_t * rvm_trans_temp;
@@ -47,6 +47,8 @@ void rvm_trans_create(rvm_t rvm, int numsegs, void **segbases)
 	}
 
 	rvm_global_trans_head = rvm_trans_temp;
+
+	return rvm_trans_temp->trans_id;
 }
 
 /*

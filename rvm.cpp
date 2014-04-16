@@ -40,118 +40,82 @@ rvm_t rvm_init(const char *directory)
 
 void *rvm_map(rvm_t rvm, const char *segname, int size_to_create)
 {
-	rvm_dir_t *temp;
-	char *curr_dir;
-	void *ret_pointer = NULL;
-	char *seg = strdup(segname);
-	rvm_seg_t *seg_node = (rvm_seg_t *) malloc(sizeof(rvm_seg_t));
+	rvm_dir_t * rvm_dir_temp;
+	char * dir_name;
+	void * ret_pointer = NULL;
+	char * rvm_seg = strdup(segname);
+	rvm_seg_t * seg_node = (rvm_seg_t *) malloc(sizeof(rvm_seg_t));
+	char * mode = "w+";
+	int size = size_to_create;
+	FILE * rvm_seg_file;
 
-	seg_node->seg_name = seg;
-	seg_node->seg_size = size_to_create;
-	seg_node->seg_base_addr =  malloc(size_to_create);
-	seg_node->seg_trans_id = 0;
-	seg_node->seg_next = NULL;
-
-
-	if(rvm_seg_mapped(seg, rvm))
+	if(rvm_seg_mapped(rvm_seg, rvm))
 	{
-		rvm_exit("segment mapped already, can not map again");
+		rvm_exit("Segment already mapped");
 	}
-	if(rvm_seg_exists(seg, rvm))
+
+	rvm_dir_temp = rvm_dir_get(rvm);
+
+	if (rvm_dir_temp == NULL)
 	{
-		temp = rvm_dir_get(rvm);
-
-		if (temp == NULL)
-			cout<<"directory not found";
-		else
-		{
-
-			curr_dir = temp->dir_name;
-			if(curr_dir==NULL)
-				cout<<"NULL DIRECTORY";
-		}
-
-		if(chdir(curr_dir)==-1) exit(0);
-
-		int size = rvm_seg_size(seg, curr_dir);
-		if(size == 0)
-		{
-			if(!(rvm_seg_write(seg,size_to_create, "w+")))
-			{
-				cout<<"segment failed to write";
-			}
-		}
-		if(size < size_to_create)
-		{
-			if(!(rvm_seg_write(seg, size_to_create, "a")))
-			{
-				cout<<"segment failed to append size";
-			}
-		}
-		//This function updates the segment file and the log file both
-		//	    gt_fileLookupLog("LogFile", segname,curr_dir);
-
-
-		rvm_dir_t *temp1 = rvm_dir_get(rvm);
-
-		//Check if rvm directory exists
-
-		void *buf = (void *) malloc((size_t)size);
-		chdir(curr_dir);
-		FILE *f = fopen( seg, "r" );
-		fread(buf, 1 ,(size_t) size, f);
-		fclose(f);
-
-		//This is where it maps
-		seg_node->seg_base_addr = buf;
-
-		if(temp1->seg_head == NULL)
-			temp1->seg_head = seg_node;
-		else
-		{
-			seg_node->seg_next = temp1->seg_head;
-			temp1->seg_head = seg_node;
-		}
-
-		chdir("..");
-		ret_pointer = seg_node->seg_base_addr;
-		return ret_pointer;
+		rvm_exit("Directory not found");
 	}
 	else
 	{
-		int temp_ret;
-
-
-		rvm_dir_t *temp = rvm_dir_get(rvm);
-		if(temp==NULL)
-			cout<<"Segment not initialized\n";
-
-		//Insert this segment into the directory's segment list here
-		if(temp->seg_head == NULL)
-			temp->seg_head = seg_node;
-		else
+		dir_name = rvm_dir_temp->dir_name;
+		if(dir_name == NULL)
 		{
-			seg_node->seg_next = temp->seg_head;
-			temp->seg_head = seg_node;
+			rvm_exit("Directory name empty");
 		}
-
-		//Go into this directory now.
-		if(chdir(temp->dir_name)==-1) exit(0);
-
-		temp_ret = rvm_seg_write(seg, size_to_create, "w+");
-		if(temp_ret == 0)
-			cout<<"segment file could not be updated \n";
-
-		chdir("..");
-		ret_pointer = seg_node->seg_base_addr;
-		return ret_pointer;
 	}
+
+	if(rvm_seg_exists(rvm_seg, rvm))
+	{
+		size = rvm_seg_size(rvm_seg, dir_name);
+
+		if(size < size_to_create)
+		{
+			mode = "a";
+		}
+		//This function updates the segment file and the log file both
+		//	    gt_fileLookupLog("LogFile", segname,curr_dir);
+	}
+
+	if(rvm_seg_write(rvm_seg, size_to_create, mode) == 0)
+	{
+		rvm_exit("Segment creation error");
+	}
+
+	chdir(dir_name);
+
+	/* Segment Mapping */
+	rvm_seg_file = open(rvm_seg, O_RDONLY, 0);
+	ret_pointer = mmap(NULL, size, PROT_READ, MAP_PRIVATE, rvm_seg_file, 0);
+	if(ret_pointer == NULL)
+	{
+		rvm_exit("Mapping unsuccessful");
+	}
+
+	seg_node->seg_name = rvm_seg;
+	seg_node->seg_size = size_to_create;
+	seg_node->seg_base_addr = ret_pointer;
+	seg_node->seg_trans_id = 0;
+	seg_node->seg_next = NULL;
+
+	if(rvm_dir_temp->seg_head == NULL)
+	{
+		rvm_dir_temp->seg_head = seg_node;
+	}
+	else
+	{
+		seg_node->seg_next = rvm_dir_temp->seg_head;
+		rvm_dir_temp->seg_head = seg_node;
+	}
+
+	chdir("..");
+
+	return ret_pointer;
 }
-
-
-
-
-
 
 void rvm_unmap(rvm_t rvm, void *segbase)
 {
@@ -162,32 +126,32 @@ void rvm_unmap(rvm_t rvm, void *segbase)
 
 void rvm_destroy(rvm_t rvm, const char *segname)
 {
-	  char * seg = strdup(segname);
-	  if(rvm_seg_mapped(seg, rvm))
-	  {
-	    rvm_exit("Segment already mapped. Cannot be destroyed");
-	  }
+	char * seg = strdup(segname);
+	if(rvm_seg_mapped(seg, rvm))
+	{
+		rvm_exit("Segment already mapped. Cannot be destroyed");
+	}
 
-	  rvm_dir_t *dir;
-	  dir= rvm_dir_get(rvm);
+	rvm_dir_t *dir;
+	dir= rvm_dir_get(rvm);
 
-	  if(dir)
-	  {
+	if(dir)
+	{
 
-	    chdir(dir->dir_name);
-	    if(rvm_seg_exists(seg,rvm))
-	      {
-	    	if(rvm_seg_delete(seg, rvm)!=0)
-	      	    {
-	    			rvm_exit("Segment not destroyed");
-	      	    }
-	    	else
-	    		{
-	    			cout<<"Segment Destroyed successfully";
-	    		}
-	      }
-	    chdir("..");
-	  }
+		chdir(dir->dir_name);
+		if(rvm_seg_exists(seg,rvm))
+		{
+			if(rvm_seg_delete(seg, rvm)!=0)
+			{
+				rvm_exit("Segment not destroyed");
+			}
+			else
+			{
+				cout<<"Segment Destroyed successfully";
+			}
+		}
+		chdir("..");
+	}
 }
 
 
