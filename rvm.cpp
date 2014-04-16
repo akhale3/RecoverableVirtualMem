@@ -176,12 +176,13 @@ trans_t rvm_begin_trans(rvm_t rvm, int numsegs, void **segbases)
 	      temp = rvm_global_trans_head;
 	    }
 
-	//  return rvm_trans_create(insert_trans);
+	return rvm_trans_create(rvm, numsegs, segbases);
 
 }
 
 void rvm_about_to_modify(trans_t tid, void *segbase, int offset, int size)
 {
+
 
 }
 
