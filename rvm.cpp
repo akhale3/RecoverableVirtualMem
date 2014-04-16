@@ -184,6 +184,37 @@ trans_t rvm_begin_trans(rvm_t rvm, int numsegs, void **segbases)
 void rvm_about_to_modify(trans_t tid, void *segbase, int offset, int size)
 {
 
+	int i = 0, flag = 0;
+	rvm_trans_t *temp;
+	temp = rvm_trans_get(tid);
+    if(temp == NULL)
+    {
+    	rvm_exit("transaction not found");
+    }
+
+
+	  for(i = 0; i < temp->trans_seg_count; i++)
+	  {
+	    if(temp->trans_seg_bases[i] == segbase)
+	    {
+	      flag = 1;
+	      break;
+	    }
+	  }
+
+	  if(flag == 0)
+	  {
+		  rvm_exit("segment doesnot present in this transaction");
+	  }
+
+	  rvm_seg_t * temp_seg = gt_transaction_searchDIR(temp->trans_rvm, segbase);
+	  char *seg_name = temp_seg->seg_name;
+
+
+
+	  }
+
+
 
 }
 
