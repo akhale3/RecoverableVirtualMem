@@ -22,6 +22,6 @@ typedef struct rvm_redo
 } rvm_redo_t;
 
 int rvm_log_write(char * seg_name, int size, int offset, char * data);	// Appends to a log file for a particular backing store
-int rvm_log_delete(char * seg_name);									// Delete the log file from the backing store associated with a particular segment
+int rvm_log_delete(char * seg_name);									// Delete the segment entry from the log file in the backing store
 
 #endif /* RVM_LOG_H_ */

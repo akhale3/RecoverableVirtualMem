@@ -46,12 +46,53 @@ int rvm_log_write(char * seg_name, int size, int offset, char * data)
 
 /*
  * @function		rvm_log_delete
- * @brief			Delete the log file from the backing store associated with a particular segment
+ * @brief			Delete the segment entry from the log file in the backing store
  * @param[seg_name]	Name of segment file
  * @return			1 if successful, 0 if erroneous
  */
 int rvm_log_delete(char * seg_name)
 {
+	FILE * rvm_file_ptr, * rvm_backup_ptr;
+	int ret = 1;
+	int i;
 
+	rvm_file_ptr = fopen("rvm.log", "r");
+	if(rvm_file_ptr == NULL)
+	{
+		rvm_exit("Log does not exist");
+	}
+
+	rvm_backup_ptr = fopen("rvm.log.tmp", "w+");
+	if(rvm_backup_ptr == NULL)
+	{
+		rvm_exit("Temporary log backup creation error");
+	}
+
+	char temp[100000];
+
+	while(!feof(rvm_file_ptr))
+	{
+		if(fgets(temp, 100000, rvm_file_ptr))
+		{
+			if(strncmp(temp, seg_name, sizeof(temp) - 1) != 0)
+			{
+				fprintf(rvm_backup_ptr, "%s", temp);
+			}
+			else
+			{
+				for(i = 0; i < 3; i++)
+				{
+					fgets(temp, 100000, rvm_file_ptr);
+				}
+			}
+		}
+	}
+
+	fclose(rvm_backup_ptr);
+	fclose(rvm_file_ptr);
+
+	system("mv rvm.log.tmp rvm.log");
+
+	return ret;
 }
 

@@ -219,18 +219,18 @@ void rvm_about_to_modify(trans_t tid, void *segbase, int offset, int size)
 	//memcpy(uncommitted_insertable->uncommitted_seg_backup, segbase+offset, size);
 
 	if(temp->rvm_redo_head == NULL)
-	  {
+	{
 		temp->rvm_redo_head = redo_log;
-	  }
+	}
 	else
-	  {
-	    rvm_redo_t *redo = temp->rvm_redo_head;
-	    while(redo->rvm_redo_next != NULL)
-	      {
-	    	redo = redo->rvm_redo_next;
-	      }
-	    redo->rvm_redo_next = redo_log;
-	  }
+	{
+		rvm_redo_t *redo = temp->rvm_redo_head;
+		while(redo->rvm_redo_next != NULL)
+		{
+			redo = redo->rvm_redo_next;
+		}
+		redo->rvm_redo_next = redo_log;
+	}
 }
 
 void rvm_commit_trans(trans_t tid)
@@ -286,8 +286,6 @@ void rvm_abort_trans(trans_t tid)
 		rvm_trans_delete(tid);
 
 	}
-
-
 }
 
 void rvm_truncate_log(rvm_t rvm)
@@ -298,12 +296,12 @@ void rvm_truncate_log(rvm_t rvm)
 		rvm_exit("Can not truncate, directory does not exists");
 	}
 	chdir(temp->dir_name);
-    rvm_seg_t * temp_seg;
+	rvm_seg_t * temp_seg;
 	temp_seg = temp->seg_head;
 	while(temp_seg!=NULL)
-	  {
-	    //gt_fileLookupLog("LogFile", temp_seg->seg_name,temp);
-	    temp_seg = temp_seg->seg_next;
-	  }
-	  chdir("..");
+	{
+		//gt_fileLookupLog("LogFile", temp_seg->seg_name,temp);
+		temp_seg = temp_seg->seg_next;
+	}
+	chdir("..");
 }
