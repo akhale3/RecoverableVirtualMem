@@ -68,6 +68,8 @@ void *rvm_map(rvm_t rvm, const char *segname, int size_to_create)
 		rvm_exit("Directory name empty");
 	}
 
+	chdir(dir_name);
+
 	if(rvm_seg_exists(rvm_seg, rvm))
 	{
 		size = rvm_seg_size(rvm_seg, dir_name);
@@ -84,8 +86,6 @@ void *rvm_map(rvm_t rvm, const char *segname, int size_to_create)
 	{
 		rvm_exit("Segment creation error");
 	}
-
-	chdir(dir_name);
 
 	/* Segment Mapping */
 	rvm_seg_file = open(rvm_seg, O_RDONLY, 0);
@@ -141,7 +141,6 @@ void rvm_destroy(rvm_t rvm, const char *segname)
 
 	if(dir)
 	{
-
 		chdir(dir->dir_name);
 		if(rvm_seg_exists(seg,rvm))
 		{
@@ -149,10 +148,12 @@ void rvm_destroy(rvm_t rvm, const char *segname)
 			{
 				rvm_exit("Segment not destroyed");
 			}
+			/*
 			else
 			{
 				cout << "Segment Destroyed successfully" << "\n";
 			}
+			*/
 		}
 		chdir("..");
 	}
@@ -161,7 +162,7 @@ void rvm_destroy(rvm_t rvm, const char *segname)
 trans_t rvm_begin_trans(rvm_t rvm, int numsegs, void **segbases)
 {
 	int i = 0,j = 0;
-	rvm_trans_t *temp;
+	rvm_trans_t * temp = rvm_global_trans_head;
 	if(temp != NULL)
 		for(i = 0; i < numsegs; i++)
 		{
@@ -181,14 +182,12 @@ trans_t rvm_begin_trans(rvm_t rvm, int numsegs, void **segbases)
 		}
 
 	return rvm_trans_create(rvm, numsegs, segbases);
-
 }
 
 void rvm_about_to_modify(trans_t tid, void *segbase, int offset, int size)
 {
-
 	int i = 0, flag = 0;
-	rvm_trans_t *temp;
+	rvm_trans_t * temp;
 	temp = rvm_trans_get(tid);
 	if(temp == NULL)
 	{
@@ -210,15 +209,13 @@ void rvm_about_to_modify(trans_t tid, void *segbase, int offset, int size)
 	}
 
 	rvm_seg_t * temp_seg = rvm_seg_get(segbase, temp->trans_dir_id);
-	char *seg_name = temp_seg->seg_name;
-	rvm_redo_t *redo_log = (rvm_redo_t *) malloc(sizeof(rvm_redo_t));
+	char * seg_name = temp_seg->seg_name;
+	rvm_redo_t * redo_log = (rvm_redo_t *) malloc(sizeof(rvm_redo_t));
 	redo_log->offset = offset;
 	redo_log->size = size;
 	redo_log->rvm_redo_next = NULL;
 	redo_log->seg_name = strdup(seg_name);
 	redo_log->seg_base_addr = segbase;
-	//redo_log->uncommitted_seg_backup = malloc(size);
-	//memcpy(uncommitted_insertable->uncommitted_seg_backup, segbase+offset, size);
 
 	if(temp->rvm_redo_head == NULL)
 	{

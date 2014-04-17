@@ -70,12 +70,12 @@ int rvm_seg_exists(char * seg_name, rvm_t dir_id)
 	dir_name = rvm_dir->dir_name;
 
 	/* Switch to directory that is expected to host the concerned segment */
-	chdir(dir_name);
-	struct stat * buff;
+	//chdir(dir_name);
+	struct stat buff;
 	int status = -1;
-	status = stat((const char *)seg_name, buff);
+	status = stat(seg_name, &buff);
 	/* Switch back to root directory */
-	chdir("..");
+	//chdir("..");
 
 	return (status + 1);
 }
@@ -101,10 +101,12 @@ int rvm_seg_delete(void * seg_base_addr, rvm_t dir_id)
 	rvm_seg_t * rvm_seg_curr;
 	rvm_seg_curr = rvm_dir->seg_head;
 
+	/*
 	if(rvm_seg_curr == NULL)
 	{
 		rvm_exit("Segment does not exist");
 	}
+	*/
 
 	rvm_seg_t * rvm_seg_prev;
 	rvm_seg_prev = rvm_seg_curr;
