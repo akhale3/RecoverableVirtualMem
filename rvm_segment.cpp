@@ -85,12 +85,13 @@ int rvm_seg_exists(char * seg_name, rvm_t dir_id)
  * @brief					Deletes a segment
  * @param[seg_base_addr]	Base address of the segment as passed in rvm_unmap()
  * @param[dir_id]			Directory ID containing seg_base
- * @return					None
+ * @return					1 if successful, 0 if erroneous
  */
-void rvm_seg_delete(void * seg_base_addr, rvm_t dir_id)
+int rvm_seg_delete(void * seg_base_addr, rvm_t dir_id)
 {
 	rvm_dir_t * rvm_dir;
 	rvm_dir = rvm_dir_get(dir_id);
+	int ret = 0;
 
 	if(rvm_dir == NULL)
 	{
@@ -124,7 +125,7 @@ void rvm_seg_delete(void * seg_base_addr, rvm_t dir_id)
 				rvm_exit("Segment unmapping error");
 			}
 
-			return;
+			ret = 1;
 		}
 		else
 		{
@@ -133,7 +134,7 @@ void rvm_seg_delete(void * seg_base_addr, rvm_t dir_id)
 		}
 	}
 
-	return;
+	return ret;
 }
 
 /*

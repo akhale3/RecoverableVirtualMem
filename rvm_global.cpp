@@ -8,10 +8,7 @@
 #include "rvm_global.h"
 
 rvm_t rvm_global_dir_id;
-rvm_dir_t * rvm_global_dir_head;
-
-extern trans_t rvm_global_trans_id;
-extern rvm_trans_t * rvm_global_trans_head;
+trans_t rvm_global_trans_id;
 
 void rvm_exit(char * err_msg)
 {

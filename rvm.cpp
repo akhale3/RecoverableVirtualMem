@@ -48,7 +48,7 @@ void *rvm_map(rvm_t rvm, const char *segname, int size_to_create)
 	char * mode = "w+";
 	size_t size = size_to_create;
 	off_t offset = 0;
-	FILE * rvm_seg_file;
+	int rvm_seg_file;
 
 	if(rvm_seg_mapped(rvm_seg, rvm))
 	{

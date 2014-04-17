@@ -7,6 +7,8 @@
 
 #include "rvm_transaction.h"
 
+rvm_trans_t * rvm_global_trans_head;
+
 /*
  * @function			rvm_trans_create
  * @brief				Inserts a transaction structure to the head of the transaction linked list

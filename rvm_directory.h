@@ -25,6 +25,8 @@ typedef struct rvm_dir
 	struct rvm_dir *	dir_next;
 }	rvm_dir_t;
 
+extern rvm_dir_t * rvm_global_dir_head;
+
 int rvm_dir_check_exists(char * dir_name);	// Checks if directory exists.
 int rvm_dir_mkdir(char * dir_name);			// Makes a directory at current location.
 rvm_t rvm_dir_create(char * dir_name);		// Populates the directory structure and appends to the end of the directory linked list.

@@ -9,10 +9,8 @@
 #define RVM_TRANSACTION_H_
 
 #include "rvm_types.h"
-#include "rvm_global.h"
-#include "rvm_segment.h"
-#include "rvm_directory.h"
 #include "rvm_log.h"
+#include "rvm_global.h"
 
 typedef struct rvm_trans
 {
@@ -20,9 +18,11 @@ typedef struct rvm_trans
 	void **				trans_seg_bases;
 	int 				trans_seg_count;
 	rvm_t				trans_dir_id;
-	rvm_redo_t *		rvm_redo_head;
+	struct rvm_redo *	rvm_redo_head;
 	struct rvm_trans *	trans_next;
 } rvm_trans_t;
+
+extern rvm_trans_t * rvm_global_trans_head;
 
 trans_t rvm_trans_create(rvm_t rvm, int numsegs, void **segbases);	// Inserts a transaction structure to the head of the transaction linked list.
 void rvm_trans_delete(trans_t trans_id);							// Deletes a particular transaction from the transaction linked list.
