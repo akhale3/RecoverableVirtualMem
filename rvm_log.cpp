@@ -49,13 +49,14 @@ int rvm_log_write(char * seg_name, int size, int offset, char * data)
  * @brief			Update the segment entry in the log file in the backing store
  * @param[seg_name]	Name of segment file
  * @param[dir]		Name of directory
- * @return			1 if successful, 0 if erroneous
+ * @return			None
  */
-int rvm_log_update(char * seg_name, char * dir)
+void rvm_log_update(char * seg_name, char * dir)
 {
 	FILE * rvm_file_ptr, * rvm_backup_ptr;
-	int ret = 1;
 	int i;
+
+	chdir(dir);
 
 	rvm_file_ptr = fopen("rvm.log", "r");
 	if(rvm_file_ptr == NULL)
@@ -97,7 +98,7 @@ int rvm_log_update(char * seg_name, char * dir)
 
 	system("mv rvm.log.tmp rvm.log");
 
-	return ret;
+	chdir("..");
 }
 
 /*

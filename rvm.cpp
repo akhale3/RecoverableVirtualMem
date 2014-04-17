@@ -61,13 +61,11 @@ void *rvm_map(rvm_t rvm, const char *segname, int size_to_create)
 	{
 		rvm_exit("Directory not found");
 	}
-	else
+
+	dir_name = rvm_dir_temp->dir_name;
+	if(dir_name == NULL)
 	{
-		dir_name = rvm_dir_temp->dir_name;
-		if(dir_name == NULL)
-		{
-			rvm_exit("Directory name empty");
-		}
+		rvm_exit("Directory name empty");
 	}
 
 	if(rvm_seg_exists(rvm_seg, rvm))
@@ -78,8 +76,8 @@ void *rvm_map(rvm_t rvm, const char *segname, int size_to_create)
 		{
 			mode = "a";
 		}
-		//This function updates the segment file and the log file both
-		//	    gt_fileLookupLog("LogFile", segname,curr_dir);
+
+		rvm_log_update(rvm_seg, dir_name);
 	}
 
 	if(rvm_seg_write(rvm_seg, size_to_create, mode) == 0)
@@ -120,23 +118,13 @@ void *rvm_map(rvm_t rvm, const char *segname, int size_to_create)
 
 void rvm_unmap(rvm_t rvm, void *segbase)
 {
-	//before deleting segment make sure all logs and transactions are deleted from that seg
-	//consider closing file pointer: rvm_seg_file
-
 	if(segbase == NULL)
 	{
 		rvm_exit("Segment not found");
 	}
-	rvm_trans_t * temp;
-	temp  = rvm_global_trans_head;
-	if(temp != NULL)
-	{
-		while(temp != NULL)
-		{
-			rvm_redo_delete(temp, segbase);
-			temp = temp->trans_next;
-		}
-	}
+
+	rvm_redo_delete(segbase);
+
 	rvm_seg_delete(segbase, rvm);
 }
 
@@ -304,18 +292,22 @@ void rvm_abort_trans(trans_t tid)
 
 void rvm_truncate_log(rvm_t rvm)
 {
-	rvm_dir_t *temp = rvm_dir_get(rvm);
-	if(temp==NULL)
+	rvm_dir_t * temp = rvm_dir_get(rvm);
+
+	if(temp == NULL)
 	{
 		rvm_exit("Can not truncate, directory does not exists");
 	}
+
 	chdir(temp->dir_name);
+
 	rvm_seg_t * temp_seg;
 	temp_seg = temp->seg_head;
-	while(temp_seg!=NULL)
+	while(temp_seg != NULL)
 	{
-		//gt_fileLookupLog("LogFile", temp_seg->seg_name,temp);
+		rvm_log_update(temp_seg->seg_name, temp->dir_name);
 		temp_seg = temp_seg->seg_next;
 	}
+
 	chdir("..");
 }
