@@ -9,7 +9,7 @@ RANLIB  = ranlib
 
 LIBRARY = librvm.a
 
-LIB_SRC = rvm.cpp rvm_global.cpp rvm_directory.cpp rvm_segment.cpp rvm_file.cpp
+LIB_SRC = rvm.cpp rvm_global.cpp rvm_directory.cpp rvm_segment.cpp rvm_log.cpp
 
 LIB_OBJ = $(patsubst %.cpp,%.o,$(LIB_SRC))
 

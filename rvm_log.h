@@ -10,6 +10,9 @@
 
 #include "rvm_types.h"
 #include "rvm_global.h"
+#include "rvm_segment.h"
+#include "rvm_directory.h"
+#include "rvm_transaction.h"
 
 /* Redo record in memory */
 typedef struct rvm_redo
@@ -22,6 +25,7 @@ typedef struct rvm_redo
 } rvm_redo_t;
 
 int rvm_log_write(char * seg_name, int size, int offset, char * data);	// Appends to a log file for a particular backing store
-int rvm_log_delete(char * seg_name);									// Delete the segment entry from the log file in the backing store
+int rvm_log_update(char * seg_name, char * dir);						// Update the segment entry in the log file in the backing store
+void rvm_redo_delete(void * seg_base_addr);								// Deletes all redo records of all transactions from memory
 
 #endif /* RVM_LOG_H_ */

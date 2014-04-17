@@ -45,12 +45,13 @@ int rvm_log_write(char * seg_name, int size, int offset, char * data)
 }
 
 /*
- * @function		rvm_log_delete
- * @brief			Delete the segment entry from the log file in the backing store
+ * @function		rvm_log_update
+ * @brief			Update the segment entry in the log file in the backing store
  * @param[seg_name]	Name of segment file
+ * @param[dir]		Name of directory
  * @return			1 if successful, 0 if erroneous
  */
-int rvm_log_delete(char * seg_name)
+int rvm_log_update(char * seg_name, char * dir)
 {
 	FILE * rvm_file_ptr, * rvm_backup_ptr;
 	int ret = 1;
@@ -80,6 +81,9 @@ int rvm_log_delete(char * seg_name)
 			}
 			else
 			{
+				/* Got seg_name
+				Get size, offset and data
+				Effectively, skip segment */
 				for(i = 0; i < 3; i++)
 				{
 					fgets(temp, 100000, rvm_file_ptr);
@@ -96,3 +100,47 @@ int rvm_log_delete(char * seg_name)
 	return ret;
 }
 
+/*
+ * @function				rvm_redo_delete
+ * @brief					Deletes all redo records of all transactions from memory
+ * @param[seg_base_addr]	Base address of segment whose redo records are to be deleted
+ * @return					None
+ */
+void rvm_redo_delete(void * seg_base_addr)
+{
+	rvm_trans_t * rvm_trans_curr;
+	rvm_trans_curr = rvm_global_trans_head;
+
+	if(rvm_trans_curr == NULL)
+	{
+		rvm_exit("Transaction list empty");
+	}
+
+	while(rvm_trans_curr != NULL)
+	{
+		rvm_redo_t * rvm_redo_curr;
+		rvm_redo_curr = rvm_trans_curr->rvm_redo_head;
+
+		if(rvm_redo_curr == NULL)
+		{
+			rvm_exit("No redo records exist");
+		}
+
+		rvm_redo_t * rvm_redo_prev;
+		rvm_redo_prev = rvm_redo_curr;
+
+		while(rvm_redo_curr != NULL)
+		{
+			if(rvm_redo_curr->seg_base_addr == seg_base_addr)
+			{
+				rvm_redo_prev->rvm_redo_next = rvm_redo_curr->rvm_redo_next;
+				return;
+			}
+			else
+			{
+				rvm_redo_prev = rvm_redo_curr;
+				rvm_redo_curr = rvm_redo_curr->rvm_redo_next;
+			}
+		}
+	}
+}

@@ -122,8 +122,22 @@ void rvm_unmap(rvm_t rvm, void *segbase)
 {
 	//before deleting segment make sure all logs and transactions are deleted from that seg
 	//consider closing file pointer: rvm_seg_file
-	rvm_seg_delete(segbase, rvm);
 
+	if(segbase == NULL)
+	{
+		rvm_exit("Segment not found");
+	}
+	rvm_trans_t * temp;
+	temp  = rvm_global_trans_head;
+	if(temp != NULL)
+	{
+		while(temp != NULL)
+		{
+			rvm_redo_delete(temp, segbase);
+			temp = temp->trans_next;
+		}
+	}
+	rvm_seg_delete(segbase, rvm);
 }
 
 void rvm_destroy(rvm_t rvm, const char *segname)
