@@ -4,7 +4,7 @@ RecoverableVirtualMem
 A recoverable virtual memory system for creating persistent segments of memory accessible by sequential transactions.
 
 1. Execution
-Just run the script file run.sh <testfile_name.c> in the root directory of the project folder.
+- Just run the script file run.sh <testfile_name.c> in the root directory of the project folder.
 
 2. Testing
 This code was tested on a Linux x86-64 SMP on the Killerbee cluster at Georgia Tech.
