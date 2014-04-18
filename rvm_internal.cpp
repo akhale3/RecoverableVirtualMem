@@ -194,17 +194,8 @@ void rvm_log_update(char * seg_name, char * dir)
 	{
 		if(fgets(temp, temp_size, rvm_file_ptr))
 		{
-			if(strncmp(temp, seg_name, sizeof(temp) - 1) != 10)
+			if(strncmp(temp, seg_name, sizeof(temp) - 1) != 10)	// 10 is to compensate for newline character
 			{
-				/* Got seg_name
-								Get size, offset and data
-								Effectively, skip segment */
-				/*
-								for(i = 0; i < 3; i++)
-								{
-									fgets(temp, 100000, rvm_file_ptr);
-								}
-				 */
 				fwrite(temp, strlen(temp), 1, rvm_backup_ptr);	// Segment Name
 
 				fgets(temp, temp_size, rvm_file_ptr);
@@ -221,7 +212,6 @@ void rvm_log_update(char * seg_name, char * dir)
 			}
 			else
 			{
-				//fprintf(rvm_backup_ptr, "%s", temp);
 				fgets(temp, temp_size, rvm_file_ptr);
 				temp[strlen(temp) - 1] = NULL;
 				size = atoi(temp);
@@ -347,13 +337,9 @@ int rvm_seg_exists(char * seg_name, rvm_t dir_id)
 	char * dir_name;
 	dir_name = rvm_dir->dir_name;
 
-	/* Switch to directory that is expected to host the concerned segment */
-	//chdir(dir_name);
 	struct stat buff;
 	int status = -1;
 	status = stat(seg_name, &buff);
-	/* Switch back to root directory */
-	//chdir("..");
 
 	return (status + 1);
 }
@@ -378,13 +364,6 @@ int rvm_seg_delete(void * seg_base_addr, rvm_t dir_id)
 
 	rvm_seg_t * rvm_seg_curr;
 	rvm_seg_curr = rvm_dir->seg_head;
-
-	/*
-	if(rvm_seg_curr == NULL)
-	{
-		rvm_exit("Segment does not exist");
-	}
-	 */
 
 	rvm_seg_t * rvm_seg_prev;
 	rvm_seg_prev = rvm_seg_curr;
