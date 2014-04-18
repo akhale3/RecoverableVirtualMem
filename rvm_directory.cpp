@@ -7,8 +7,6 @@
 
 #include "rvm_directory.h"
 
-rvm_dir_t * rvm_global_dir_head;
-
 /*
  * TODO:
  * 1. Complete all interface definitions.

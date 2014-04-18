@@ -106,7 +106,7 @@ int rvm_seg_delete(void * seg_base_addr, rvm_t dir_id)
 	{
 		rvm_exit("Segment does not exist");
 	}
-	*/
+	 */
 
 	rvm_seg_t * rvm_seg_prev;
 	rvm_seg_prev = rvm_seg_curr;
@@ -121,13 +121,8 @@ int rvm_seg_delete(void * seg_base_addr, rvm_t dir_id)
 				rvm_dir->seg_head = NULL;
 			}
 
-			/* Unmap segment from virtual memory */
-			if(munmap(rvm_seg_curr->seg_base_addr, rvm_seg_curr->seg_size) != 0)
-			{
-				rvm_exit("Segment unmapping error");
-			}
-
 			ret = 1;
+			break;
 		}
 		else
 		{
@@ -192,7 +187,7 @@ int rvm_seg_write(char * seg_name, int seg_size, char * mode)
 	int ret = 0;
 
 	char buff[1];
-	buff[0] = '\0';
+	buff[0] = NULL;
 
 	if(seg_size > curr_seg_size)
 	{
@@ -243,6 +238,7 @@ rvm_seg_t * rvm_seg_get(void * seg_base_addr, rvm_t dir_id)
 		if(rvm_seg_curr->seg_base_addr == seg_base_addr)
 		{
 			ret = rvm_seg_curr;
+			break;
 		}
 		else
 		{
@@ -250,5 +246,42 @@ rvm_seg_t * rvm_seg_get(void * seg_base_addr, rvm_t dir_id)
 		}
 	}
 
+	return ret;
+}
+
+/*
+ * @function		rvm_seg_update
+ * @brief			Writes data to segment file
+ * @param[seg_name]	Name of segment file
+ * @param[size]		Size of data
+ * @param[offset]	Offset to next data
+ * @param[data]		Data to be written
+ * @param[dir]		Directory name
+ * @return			1 if successful, 0 if erroneous
+ */
+int rvm_seg_update(char * seg_name, int size, int offset, char * data, char * dir)
+{
+	int rvm_seg_file;
+	int ret = 1;
+	chdir(dir);
+	rvm_seg_file = open(seg_name, O_RDWR);
+	if(rvm_seg_file < 0)
+	{
+		rvm_exit("Error opening file");
+	}
+
+	void * rvm_seg_backup;
+	struct stat buff;
+
+	if (fstat(rvm_seg_file, &buff) < 0)
+	{
+		rvm_exit("Error fetching file size");
+	}
+
+	rvm_seg_backup = mmap(NULL, buff.st_size, PROT_WRITE, MAP_SHARED, rvm_seg_file, 0);
+	memcpy(rvm_seg_backup + offset, data, size * sizeof (char));
+	munmap(rvm_seg_backup, buff.st_size);
+
+	chdir("..");
 	return ret;
 }

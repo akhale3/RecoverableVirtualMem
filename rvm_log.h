@@ -11,6 +11,7 @@
 #include "rvm_types.h"
 #include "rvm_global.h"
 #include "rvm_transaction.h"
+#include "rvm_segment.h"
 
 /* Redo record in memory */
 typedef struct rvm_redo
@@ -19,6 +20,7 @@ typedef struct rvm_redo
 	int 				size;
 	int 				offset;
 	void *				seg_base_addr;
+	void *				offset_data;
 	struct rvm_redo *	rvm_redo_next;
 } rvm_redo_t;
 

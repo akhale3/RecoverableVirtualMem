@@ -7,8 +7,6 @@
 
 #include "rvm_transaction.h"
 
-rvm_trans_t * rvm_global_trans_head;
-
 /*
  * @function			rvm_trans_create
  * @brief				Inserts a transaction structure to the head of the transaction linked list
@@ -19,7 +17,7 @@ rvm_trans_t * rvm_global_trans_head;
  */
 trans_t rvm_trans_create(rvm_t rvm, int numsegs, void **segbases)
 {
-	int i = numsegs;
+	int i = numsegs - 1;
 	rvm_trans_t * rvm_trans_temp;
 	rvm_trans_temp = (rvm_trans_t *) malloc(sizeof(rvm_trans_t));
 	if(rvm_trans_temp == NULL)
@@ -51,7 +49,7 @@ trans_t rvm_trans_create(rvm_t rvm, int numsegs, void **segbases)
 
 	rvm_global_trans_head = rvm_trans_temp;
 
-	return rvm_trans_temp->trans_id;
+	return rvm_global_trans_id;
 }
 
 /*
@@ -78,6 +76,10 @@ void rvm_trans_delete(trans_t trans_id)
 		if(rvm_trans_curr->trans_id == trans_id)
 		{
 			rvm_trans_prev->trans_next = rvm_trans_curr->trans_next;
+			if(rvm_trans_curr == rvm_global_trans_head)
+			{
+				rvm_global_trans_head = NULL;
+			}
 			return;
 		}
 		else

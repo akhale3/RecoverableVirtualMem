@@ -12,8 +12,6 @@
 
 #include "rvm_log.h"
 
-#define DEBUG 1
-
 /*
  * @function		rvm_log_write
  * @brief			Appends to a log file for a particular backing store
@@ -54,7 +52,9 @@ int rvm_log_write(char * seg_name, int size, int offset, char * data)
 void rvm_log_update(char * seg_name, char * dir)
 {
 	FILE * rvm_file_ptr, * rvm_backup_ptr;
-	int i;
+	int temp_size = 100000;
+	char temp[temp_size];
+	int size, offset, status;
 
 	chdir(dir);
 
@@ -70,31 +70,58 @@ void rvm_log_update(char * seg_name, char * dir)
 		rvm_exit("Temporary log backup creation error");
 	}
 
-	char temp[100000];
-
 	while(!feof(rvm_file_ptr))
 	{
-		if(fgets(temp, 100000, rvm_file_ptr))
+		if(fgets(temp, temp_size, rvm_file_ptr))
 		{
-			if(strncmp(temp, seg_name, sizeof(temp) - 1) != 0)
+			if(strncmp(temp, seg_name, sizeof(temp) - 1) != 10)
 			{
-				fprintf(rvm_backup_ptr, "%s", temp);
+				/* Got seg_name
+								Get size, offset and data
+								Effectively, skip segment */
+				/*
+								for(i = 0; i < 3; i++)
+								{
+									fgets(temp, 100000, rvm_file_ptr);
+								}
+				 */
+				fwrite(temp, strlen(temp), 1, rvm_backup_ptr);	// Segment Name
+
+				fgets(temp, temp_size, rvm_file_ptr);
+				fwrite(temp, strlen(temp), 1, rvm_backup_ptr);	// Size
+				temp[strlen(temp) - 1] = NULL;
+				size = atoi(temp);
+
+				fgets(temp, temp_size, rvm_file_ptr);
+				fwrite(temp, strlen(temp), 1, rvm_backup_ptr);	// Offset
+
+				char * buff = (char *) malloc(size);
+				fread(buff, size, 1, rvm_file_ptr);
+				fwrite(buff, size, 1, rvm_backup_ptr);			// Data
 			}
 			else
 			{
-				/* Got seg_name
-				Get size, offset and data
-				Effectively, skip segment */
-				for(i = 0; i < 3; i++)
-				{
-					fgets(temp, 100000, rvm_file_ptr);
-				}
+				//fprintf(rvm_backup_ptr, "%s", temp);
+				fgets(temp, temp_size, rvm_file_ptr);
+				temp[strlen(temp) - 1] = NULL;
+				size = atoi(temp);
+
+				fgets(temp, temp_size, rvm_file_ptr);
+				temp[strlen(temp) - 1] = NULL;
+				offset = atoi(temp);
+
+				char * buff = (char *) malloc(size);
+				fread(buff, size, 1, rvm_file_ptr);
+
+				status = rvm_seg_update(seg_name, size, offset, buff, dir);
 			}
 		}
 	}
 
 	fclose(rvm_backup_ptr);
 	fclose(rvm_file_ptr);
+
+	chdir(dir);
 
 	system("mv rvm.log.tmp rvm.log");
 
@@ -112,36 +139,34 @@ void rvm_redo_delete(void * seg_base_addr)
 	rvm_trans_t * rvm_trans_curr;
 	rvm_trans_curr = rvm_global_trans_head;
 
-	if(rvm_trans_curr == NULL)
+	if(rvm_trans_curr != NULL)
 	{
-		rvm_exit("Transaction list empty");
-	}
-
-	while(rvm_trans_curr != NULL)
-	{
-		rvm_redo_t * rvm_redo_curr;
-		rvm_redo_curr = rvm_trans_curr->rvm_redo_head;
-
-		if(rvm_redo_curr == NULL)
+		while(rvm_trans_curr != NULL)
 		{
-			rvm_exit("No redo records exist");
-		}
+			rvm_redo_t * rvm_redo_curr;
+			rvm_redo_curr = rvm_trans_curr->rvm_redo_head;
 
-		rvm_redo_t * rvm_redo_prev;
-		rvm_redo_prev = rvm_redo_curr;
-
-		while(rvm_redo_curr != NULL)
-		{
-			if(rvm_redo_curr->seg_base_addr == seg_base_addr)
+			if(rvm_redo_curr == NULL)
 			{
-				rvm_redo_prev->rvm_redo_next = rvm_redo_curr->rvm_redo_next;
-				return;
+				rvm_exit("No redo records exist");
 			}
-			else
+
+			rvm_redo_t * rvm_redo_prev;
+			rvm_redo_prev = rvm_redo_curr;
+
+			while(rvm_redo_curr != NULL)
 			{
+				if(rvm_redo_curr->seg_base_addr == seg_base_addr)
+				{
+					rvm_redo_prev->rvm_redo_next = rvm_redo_curr->rvm_redo_next;
+					return;
+				}
+
 				rvm_redo_prev = rvm_redo_curr;
 				rvm_redo_curr = rvm_redo_curr->rvm_redo_next;
 			}
+
+			rvm_trans_curr = rvm_trans_curr->trans_next;
 		}
 	}
 }

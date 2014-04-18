@@ -26,11 +26,13 @@ typedef struct rvm_seg
 	struct rvm_seg *	seg_next;
 }	rvm_seg_t;
 
-int rvm_seg_mapped(char * seg_name, rvm_t dir_id);				// Checks whether a segment has already been mapped.
-int rvm_seg_exists(char * seg_name, rvm_t dir_id);				// Checks whether a segment already exists on disk.
-int rvm_seg_delete(void * seg_base_addr, rvm_t dir_id);		// Deletes a segment.
-int rvm_seg_size(char * seg_name, char * dir_name);				// Returns file size in bytes of seg_name for comparison with size_to_create.
-int rvm_seg_write(char * seg_name, int seg_size, char * mode);	// Writes a segment file for mode 'w+' and appends for mode 'a' with NULL characters.
-rvm_seg_t * rvm_seg_get(void * seg_base_addr, rvm_t dir_id);	// Returns a segment structure pointer for a particular segbase.
+int rvm_seg_mapped(char * seg_name, rvm_t dir_id);						// Checks whether a segment has already been mapped.
+int rvm_seg_exists(char * seg_name, rvm_t dir_id);						// Checks whether a segment already exists on disk.
+int rvm_seg_delete(void * seg_base_addr, rvm_t dir_id);					// Deletes a segment.
+int rvm_seg_size(char * seg_name, char * dir_name);						// Returns file size in bytes of seg_name for comparison with size_to_create.
+int rvm_seg_write(char * seg_name, int seg_size, char * mode);			// Writes a segment file for mode 'w+' and appends for mode 'a' with NULL characters.
+rvm_seg_t * rvm_seg_get(void * seg_base_addr, rvm_t dir_id);			// Returns a segment structure pointer for a particular segbase.
+int rvm_seg_update(char * seg_name, int size,
+		int offset, char * data, char * dir);							// Writes data to segment file.
 
 #endif /* RVM_SEGMENT_H_ */
