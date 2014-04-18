@@ -14,6 +14,7 @@ if [ -f "$1" ]; then
     rm *.o
     IFS='.' read -ra ADDR <<< "$1"
     g++ "$1" librvm.a -o "${ADDR[0]}"
+    clear
     ./"${ADDR[0]}"
 else
     echo "$1 does not exist"
