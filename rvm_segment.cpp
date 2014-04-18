@@ -5,13 +5,6 @@
  *      Authors: Anish K. and Nikita G.
  */
 
-/*
- * TODO:
- * 1. Complete interface definitions.
- * 2. Create rvm_exit(string perror) containing perror and exit(0).
- * 3. rvm_seg_update()
- */
-
 #include "rvm_segment.h"
 
 /*

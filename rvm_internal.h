@@ -15,6 +15,16 @@
 
 using namespace std;
 
+/*** Global ***/
+// rvm_t stores the entry point for the directory structure, i.e. dir_id
+typedef int rvm_t;
+typedef int trans_t;
+
+extern rvm_t rvm_global_dir_id;
+extern trans_t rvm_global_trans_id;
+
+void rvm_exit(char * err_msg);
+
 /*** Directory ***/
 typedef struct rvm_dir
 {
@@ -82,16 +92,5 @@ extern rvm_trans_t * rvm_global_trans_head;
 trans_t rvm_trans_create(rvm_t rvm, int numsegs, void **segbases);	// Inserts a transaction structure to the head of the transaction linked list.
 void rvm_trans_delete(trans_t trans_id);							// Deletes a particular transaction from the transaction linked list.
 rvm_trans_t * rvm_trans_get(trans_t trans_id);						// Returns a transaction structure pointer for a particular transaction.
-
-
-/*** Global ***/
-// rvm_t stores the entry point for the directory structure, i.e. dir_id
-typedef int rvm_t;
-typedef int trans_t;
-
-extern rvm_t rvm_global_dir_id;
-extern trans_t rvm_global_trans_id;
-
-void rvm_exit(char * err_msg);
 
 #endif /* RVM_INTERNAL_H_ */

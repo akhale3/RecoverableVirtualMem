@@ -8,11 +8,6 @@
 #include "rvm_directory.h"
 
 /*
- * TODO:
- * 1. Complete all interface definitions.
- */
-
-/*
  * @function		rvm_dir_check_exists
  * @brief			Checks if directory exists
  * @param[dir_name]	Name of directory
