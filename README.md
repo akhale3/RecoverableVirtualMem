@@ -3,16 +3,16 @@ RecoverableVirtualMem
 
 A recoverable virtual memory system for creating persistent segments of memory accessible by sequential transactions.
 
-1. Execution
-- Just run the script file run.sh <testfile_name.c> in the root directory of the project folder.
+### Execution
+Just run the script file run.sh <testfile_name.c> in the root directory of the project folder.
 
-2. Testing
+### Testing
 This code was tested on a Linux x86-64 SMP on the Killerbee cluster at Georgia Tech.
 
-3. Log File
+### Log File
 The structure of the log file, rvm.log, contains:
-- Segment name
-- Segment size
-- Segment offset
-- Segment data
+###### Segment name
+###### Segment size
+###### Segment offset
+###### Segment data
 Truncation of the log files is handled by the rvm_truncate() function. A call to this function with a global directory ID (rvm) as the parameter results in creation of a temporary log file, viz. rvm.log.tmp, containing all uncommitted log segment entries. At the end of the function, the actual log file (rvm.log) is overwritten by the temporary log file.
